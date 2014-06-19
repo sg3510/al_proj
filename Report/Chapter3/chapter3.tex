@@ -261,7 +261,7 @@ This was first tested on the same $80\times 50$ synthetic data as in previous ex
 
 Calculating the variance has a complexity of about $O(MND^2)$ in addition to the calculation of the covariance matrices, thus calculating the criteria at each new sample is not ideal. These tweaks were done to improve performance: 
 
-\begin{description}[style=standard,leftmargin=.7cm,font=\itshape]
+\begin{description}[style=standard,leftmargin=.7cm,font=\bfseries]
   \item[Variance Matrix Calculation Update] Rather than calculating the matrix everytime a new sample comes in, we calculate the matrix at fixed intervals of incoming samples, for example after 10 have been requested.
   \item[Memory Optimisation] There are many combinations of $\mathbb{E}[U_{ik}V_{jl}]$ over the double summation. To optimise, we use the symmetry property of the covariance matrix and locally cache already calculated values.
   \item[Unknown Samples] We only calculate the variance for unknown samples.
