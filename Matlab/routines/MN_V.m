@@ -1,0 +1,49 @@
+function R_var = MN_V(U,V,z_m)
+U_V = [U;V];
+row_cov = cov(U_V');
+dim_cov = cov(U_V);
+
+% x = 11;
+% y = 10;
+[x,~] = size(U);
+[y,d] = size(V);
+R_var = zeros(x,y);
+E_ijk = zeros(x,y,d);
+E_ijk_m = zeros(x,y,d);
+% Makes runtime worse
+% E_ijkl = zeros(x,y,d,d);
+% E_ijkl_m = zeros(x,y,d,d);
+% tic
+for i=1:x
+    for j=1:y
+        %E[Uki Vkj Uli Vlj] - E[Uki Vkj] E[Uli Vlj]
+        %E[XaXb] = µaµb + ?a,b.
+        if z_m(i,j) == 1
+            for k=1:d
+                for l=1:d
+                    %Mem
+                    if E_ijk_m(i,j,k) == 0
+                        E_ijk_m(i,j,k) = 1;
+                        E_ijk(i,j,k) = expect_norm2(U,V,row_cov,dim_cov,i,j,k);
+                    end
+                    if E_ijk_m(i,j,l) == 0
+                        E_ijk_m(i,j,l) = 1;
+                        E_ijk(i,j,l) = expect_norm2(U,V,row_cov,dim_cov,i,j,l);
+                    end
+    %                 if E_ijkl_m(i,j,k,l) == 0
+    %                     E_ijkl_m(i,j,k,l) = 1;
+    %                     E_ijkl_m(i,j,l,k) = 1;
+    %                     E_ijkl(i,j,k,l) = expect_norm4(U,V,row_cov,dim_cov,i,j,k,l);
+    %                     E_ijkl(i,j,l,k) = E_ijkl(i,j,k,l);
+    %                 end
+                    R_var(i,j) = expect_norm4(U,V,row_cov,dim_cov,i,j,k,l) - E_ijk(i,j,k)*E_ijk(i,j,l);
+
+    %                 R_var(i,j) = expect_norm4(U,V,row_cov,dim_cov,i,j,k,l) - expect_norm2(U,V,row_cov,dim_cov,i,j,k)*expect_norm2(U,V,row_cov,dim_cov,i,j,l);
+                end
+            end
+        end
+    end
+end
+% disp(toc)
+% R_var = R_var-min(R_var(:));
+end
