@@ -69,10 +69,14 @@ U_targ = randn(x,num_feat); V_targ = randn(y,num_feat);
 % Choose Targeting
 % 1 - MKS, 2 - CKS, 3 - MNVar, 4 - MCMCVar, 5 - Hybrid
 targeting_type = 4;
-targeting_freq = 10; % How many samples to wait until knowledge recalculation
+% How many samples to wait until knowledge recalculation
+% For MCMCVar CKS hybrid this is the MCMCVar reculculation period
+% 50 is agood setting
+targeting_freq = 10; 
 select_min = 0; % 0 - Select Max, 1 - Select Min
 randomise = 1; % 1 - Randomise variants, 0 - Deterministic
-batch_req = 100;
+batch_req = 100; % How many samples to request in one sampling
+% process, 1 for true active sampling basis
 
 %% Start Active Sampling
 for req = 1:samples
@@ -142,6 +146,16 @@ for req = 1:samples
                 knowledge = knowledge/max(knowledge(:));
             end
             freq_count = freq_count + 1;
+        case 5 %MCMVar and CKS hybrid
+            if ((mod(freq_count,targeting_freq) == 0) || freq_count == 1)
+                [U_b,V_b,e,mean_rating] = GS_U_V(R_train_targ,z_train_targ,U_targ,V_targ);
+                var_know = MN_V(U_b,V_b,1-(z_train_targ+z_val));
+                var_know = var_know - min(var_know(:));
+                var_know = var_know/max(var_know(:));
+            end
+            [a,b] = find(knowledge==max(knowledge(:)));%a = a(j);b = b(j);
+            knowledge(:,:) = 0;
+            knowledge(a,b) = var_know(a,b);
         otherwise
             disp('Wrong type of Active Sampling selected'); break;
     end
