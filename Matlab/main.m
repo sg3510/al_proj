@@ -153,7 +153,8 @@ for req = 1:samples
                 var_know = var_know - min(var_know(:));
                 var_know = var_know/max(var_know(:));
             end
-            [a,b] = find(knowledge==max(knowledge(:)));%a = a(j);b = b(j);
+            knowledge  = CKS_UV_cluster(U_targ,V_targ, z_train_targ);
+            [a,b] = find(knowledge==min(knowledge(:)));
             knowledge(:,:) = 0;
             knowledge(a,b) = var_know(a,b);
         otherwise

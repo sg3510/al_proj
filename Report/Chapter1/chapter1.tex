@@ -204,7 +204,7 @@ $k$ is the feature index, as defined by $D$, $\mu$ i{\tiny }s the learning rate 
 \begin{align}
 \hat{R} = U^T V
 \end{align}
-For very large matrices where only a specific entry is needed a single entry can be predicted by $\hat{R}_{ij} = U_i^T V_j$.
+For very large matrices where only a specific entry is needed a single entry can be predicted by $\hat{R}_{ij} = U_i^T V_j$ to avoid the overhead of full matrix calculation.
 \subsection{Bayesian Probabilistic Matrix Factorisation}
 \label{sec:bpmf}
 \begin{figure}[!ht]
@@ -254,19 +254,19 @@ The outline of Gibbs sampling for BPMF is as follows:
 	  \end{align*}
 	\end{itemize}
 \end{enumerate}
-More details on BPMF and can be found in the appendix section \ref{sec:app_bpmf}.
+More details on BPMF can be found in the appendix section \ref{sec:app_bpmf}, more on Gibbs sampling for matrix completion in section \ref{sec:mcmcvar}.
 
-For the purpose of this project it is mainly useful to remember that BPMF performs well on very sparse matrices - in  part due to the MCMC sampling process which provides a good approximation of the true probability distribution of data points.
+For the purpose of this project it is mainly useful to remember that BPMF performs well on very sparse matrices - in  part due to the MCMC sampling process which provides a good approximation of the true probability distribution of data points but not as well on more complete matrices, as we will see later on.
 
 \subsection{Kernelized Probabilistic Matrix Factorization}
 \nomenclature{KMPF}{Kernelized Probabilistic Matrix Factorisation} 
 Another variant of PMF that was tested was KMPF \cite{kpmf}. The main ideas to take from it are that it functions like PMF but with the crucial difference that a latent Gaussian process prior is placed over all rows and columns on top of a latent vector on each row and column. This means that it captures side information through kernel matrices that contain the covariance information. The intended use of these kernels is to use separate graph data, such as the social connection between users. However in the case this data does not exist a certain correlation between columns and rows can be assumed, which still results in good performances.
 
-Performance of KPMF is best on very sparse data due to its ability to \textit{smooth} out data from its assumption of inter-row and inter-column correlation. In fact KPMF can work very well on empty rows or columns by filling them in with the most likely values - something PMF and BPMF struggle with.  Once more data on the dataset is available KPMF's performance can even be worse than the traditional model due to forcing these correlations. In the context of active sample selection, where more cells become available over time, this could cause a problem in determining the usefulness of each new discovered cell.
+Performance of KPMF is best on very sparse data due to its ability to \textit{smooth} out data from its assumption of inter-row and inter-column correlation. In fact KPMF can work very well on empty rows or columns by filling them in with the most likely values - something PMF and BPMF to an extent struggle with.  Once more data on the dataset is available KPMF's performance can even be worse than the traditional model due to forcing these correlations. In the context of active sample selection, where more cells become available over time, this could cause a problem in determining the usefulness of each new discovered cell.
 \section{Evaluation and comments}
 \subsection{Performance test}
 
-To understand what may be best to use we test each type of algorithm on a dataset. This allows to see its advantages and weaknesses. For the first test we look at figure \ref{fig:5pcmat}.
+To understand what may be best to use, we test each type of algorithm on a dataset. This allows to see its advantages and weaknesses. For the first test we look at figure \ref{fig:5pcmat}.
 
 \begin{figure}[!htbp]
   \begin{center}
@@ -286,7 +286,7 @@ To understand what may be best to use we test each type of algorithm on a datase
     \label{fig:15pcmat}
   \end{center}
 \end{figure}
-For this figure data was randomly generate by generating 2 matrices $U \in \mathbb{R}^{80\times 5}$ and $V \in \mathbb{R}^{50\times 5}$, that is 5 latent features. A  random mask allowing the variants of PMF to only access 5\% of the data was made and used for matrix completion. The Root Mean Square Error(RMSE) of the predicted data was used as a measure of success. According to RMSE the best performing algorithm is KPMF, which was on average 1.3 off the real value. However all it has effectively done is predicted the mean with some amount of variation for all unknown values. We can see the effect of Gibbs sampling from BPMF as it captures the data distribution better than PMF or KPMF. Despite this it has a higher RMSE. This is one weakness of RMSE as some data sets may penalise more for guessing a value off the mean than one nearer to the mean. Finally PMF is seen to perform the worse, simply failing to predict many entries having very little information.
+For this figure data was randomly generate by generating 2 matrices $U \in \mathbb{R}^{80\times 5}$ and $V \in \mathbb{R}^{50\times 5}$, that is 5 latent features, code for the generation is found in appendix section \ref{sec:app_synth_gen}. A  random mask allowing the variants of PMF to only access 5\% of the data was made and used for matrix completion. The Root Mean Square Error(RMSE) of the predicted data was used as a measure of success. According to RMSE the best performing algorithm is KPMF, which was on average 1.3 off the real value. However all it has effectively done is predicted the mean with some amount of variation for all unknown values. We can see the effect of Gibbs sampling from BPMF as it captures the data distribution better than PMF or KPMF. Despite this it has a higher RMSE. This is one weakness of RMSE as some data sets may penalise more for guessing a value off the mean than one nearer to the mean. Finally PMF is seen to perform the worse, simply failing to predict many entries having very little information.
 
 Making more data available, such as 15 \% of the dataset lead to an improvement for both BPMF and PMF as seen in figure \ref{fig:15pcmat}. PMF experienced the largest RMSE decrease -  something to keep in mind for sample selection. KPMF's RMSE has also improved however its output did not look any better.
 \begin{figure}[!htbp]
