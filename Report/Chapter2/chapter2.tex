@@ -20,8 +20,8 @@ Now that we have a good understanding of what matrix factorisation can do, we fo
       \includegraphics[bb = 92 86 545 742, width=\textwidth]{RS-ALdiag}
     \fi
     \end{center}
-Users are represented in rows, and there has been 3 type of users deﬁned, dark blue, light blue and green. Items are represented in the columns by letters. User item pairs that are rated are represented by a shade of grey and unrated squares are left blank.
-    \caption{Diagram of a simpliﬁed user-item matrix used for recommender systems}
+Users are represented in rows, and 3 type of users have been defined, dark blue, light blue and green. Items are represented in the columns by letters. User item pairs that are rated are represented by a shade of grey and unrated squares are left blank.
+    \caption{Diagram of a simplified user-item matrix used for recommender systems}
     \label{fig:al-diag}
 \end{figure}
 
@@ -44,14 +44,15 @@ Another measure of the active sampling algorithm is to compare the area under th
 
 
 
-It is important to be consistent with what model is used to predict data as some samples may be more useful for one model than an another. For example one model, like BPMF, will perform well by knowing a bit of everything to infer a posterior distribution of data, however PMF which does not do this will not find this sample as useful.
+It is important to be consistent with what matrix completion model is used to predict data as some samples may be more useful for one model than an another. For example one model, like BPMF, will perform well by knowing a bit of everything to infer a posterior distribution of data, however PMF which does not do this will not find this sample as useful.
 
 Effectiveness could also be linked to individual RMSE decrease, that is when a sample is discovered the amount by which it has decreased RMSE is used to rate how useful it has been. This can be a somewhat subjective error as the more about a model is know the harder RMSE decrease is.
 
 \subsection{Discrete vs Continuous Data}
-RMSE will be different for discrete and continuous data due to the way it is post-processed. Continuous data, obtained from $\hat{R}=U^TV$, is left untouched and used to calculate RMSE. For discrete data the values of $\hat{R}$ are first bounded between the minimum and maximum, for example 1 and 5 for film ratings. After this $\hat{R}$ is rounded to the nearest number in the discrete set. Error can then be calculate as traditional RMSE or as number of correct(sometimes referred to as positive) samples \cite{recsyshand}.
+RMSE will be different for discrete and continuous data due to the way it is post-processed. Continuous data, obtained from $\hat{R}=U^TV$, is left untouched and used to calculate RMSE. For discrete data the values of $\hat{R}$ are first bounded between the minimum and maximum, for example 1 and 5 for film ratings. After this $\hat{R}$ is rounded to the nearest number in the discrete set. Error can then be calculate as traditional RMSE or as number of correct (sometimes referred to as positive) samples\cite{recsyshand}.
+
 \section{Formal Definition}
-The mask matrix $Z$ is used to determine whether a value is known (or more accurately, part of the training set, the training set mask is called $Z_{tr}$). Its indices are the same as $R$ except that values can only be $0$ or $1$. The known values are represented by $1$ and form the set $\mathcal{O}$. In other words $R_\mathcal{O}$ is the matrix of the known values. We will also have the pool of queriable samples $\mathcal{P}$, that is the samples not yet known but that may be requested. Note that it is not always the case that $R_{\mathcal{O}} \cap R_{\mathcal{P}} = R$ as there may be unqueriable unknown samples. The samples queried part of the active sampling process will form the set $\mathcal{A}$, with $R_{\mathcal{A}}$ being the requested values. In graphical form the matrix representing $\mathcal{A}$ will usually be coloured. White represents the unrequested samples and the coloured cells represent the order of sampling.
+The mask matrix $Z$ is used to determine whether a value is known (or more accurately, part of the training set, the training set mask is called $Z_{tr}$). Its indices are the same as $R$ except that values can only be $0$ or $1$. The known values are represented by $1$ and form the set $\mathcal{O}$. In other words $R_\mathcal{O}$ is the matrix of the known values. We will also have the pool of queriable samples $\mathcal{P}$, that is the samples not yet known but that may be requested. Note that it is not always the case that $R_{\mathcal{O}} \cap R_{\mathcal{P}} = R$ as there may be unqueriable unknown samples. The samples queried part of the active sampling process will form the set $\mathcal{A}$, with $R_{\mathcal{A}}$ being the requested values. In this report, the graphical form the matrix representing $\mathcal{A}$ will usually be coloured for an idea of what samples are being selected. White represents the unrequested samples and the coloured cells represent the order of sampling.
 
 
 \section{Goals of Active Sampling}
@@ -59,7 +60,7 @@ The mask matrix $Z$ is used to determine whether a value is known (or more accur
 To select certain samples some aspects which are thought to be able to reduce RMSE better than random selection are outlined.
 
 \begin{description}[style=standard,leftmargin=.7cm,font=\bfseries]
-  \item[Model] Look at samples that may produce the greatest change in the parameters $U$ and $V$, with he hope that this will mean a large change towards the true distribution.
+  \item[Model] Look at samples that may produce the greatest change in the parameters $U$ and $V$, with the hope that this will mean a large change towards the true distribution.
   \item[Sample Uncertainty] Try to seek the samples that are most likely to vary based on current distribution of parameters, that is their uncertainty.
   \item[Knowledge] How much is known about a current row or column and aiming to maximise this overall, with the aim of getting a global insight of the data.
   \item[Max-Minimum] To best determine the boundaries of the data the largest and smallest estimated values are queried with the aim of minimising over and under estimation error.
@@ -69,9 +70,9 @@ To select certain samples some aspects which are thought to be able to reduce RM
 \section{Minimum Knowledge Search}
 \label{sec:mks_alg}
 %\markboth{\MakeUppercase{\thechapter. My Second Chapter }}
-Before looking at advanced sampling techniques a basic one was made to illustrate the concepts and basic increase in performance possible.
+Before looking at advanced sampling techniques a basic one is made to illustrate the concepts and basic increase in performance possible.
 \subsection{Algorithm}
-For any matrix factorisation problem we have the mask matrix $Z \in \mathbb{R}^{M \times N}$, with elements being 1 for every known value and 0 for every unknown value (values in the validation set would be also 0).
+For any matrix factorisation problem we have the mask matrix $Z \in \mathbb{R}^{M \times N}$, with elements being 1 for every known value and 0 for every unknown value (values in the validation set would be also be $0$).
 
 \begin{algorithm}
 \caption{Minimum Knowledge Search algorithm}\label{alg:min_knowl}
@@ -144,7 +145,7 @@ Figure \ref{fig:online_pmf_active} shows the change in RMSE over time as a funct
 The main weakness in this algorithm is described in figure \ref{fig:know_mat_it}. As it targets the row-column combinations with the least knowledge the number of samples available for selection at each step can actually increase due to the matrix becoming more uniform. Thus the potential for sample discrimination decreases over time and the advantage only exists during initial matrix sampling. Initialising a search trial with many more known samples can cause minimum knowledge search to perform 20\% worse \footnote{In terms of advantage value}.
 
 \subsection{Comments}
-The minimum knowledge search algorithm does not take the known matrix elements, nor the predicted ones, into consideration. These also contain information in themselves and could greatly help with the selection of better samples. Being dataset agnostic is an weakness of minimum knowledge search as dataset properties can greatly impact performance. For example a dataset where a row and column that has most of the less useful elements known but very useful unknown elements will not be targeted until very late on, potentially giving the random sampling an edge. Minimum knowledge search only really works on datasets where useful elements are not found in clusters.
+The minimum knowledge search algorithm does not take the known matrix elements, nor the predicted ones, into consideration. These also contain information in themselves and could greatly help with the selection of better samples. Being dataset agnostic is a weakness of minimum knowledge search as dataset properties can greatly impact performance. For example a dataset where a row and column that has most of the less useful elements known but very useful unknown elements will not be targeted until very late on, potentially giving the random sampling an edge. Minimum knowledge search only really works on datasets where useful elements are not found in clusters.
 
 Additionally the aim of homogenising the amount known in each column and row is not always possible in constrained situations where the sampling space is limited, that is a sample determined for selection is not available(i.e. it may not be possible to ask a user his 5 star rating of a film if he hasn't seen it).
 

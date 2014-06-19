@@ -27,7 +27,7 @@ Dimensions reduced for plotting purposes
     \label{fig:u_v_cluster}
 \end{figure}
 
-Minimum knowledge search failed to integrate information about the known data to target more informative samples. Here we decide to take advantage of the $U$ and $V$ matrices formed during matrix factorisation , as in equation \ref{eq:rsimeq}. Each of the columns of $U$ and $V$ are supposed to represent features of the related row or column. We now assume that if we knew a minimal amount of each feature it will be possible to cluster rows and columns into groups. Figure \ref{fig:u_v_cluster} shows the features of U and V clustered into 3 different groups\footnote{3 was arbitrarily chosen as the number of clusters}. In the case of drug-target interaction database dimension 1 could represent the estimated presence of a chemical, say $H_2O$ and the second dimension of the presence that represents the presence of another chemical.
+Minimum knowledge search failed to integrate information about the known data to target more informative samples. Here we decide to take advantage of the $U$ and $V$ matrices formed during matrix factorisation, as in equation \ref{eq:rsimeq}. Each of the columns of $U$ and $V$ are supposed to represent features of the related row or column. We now assume that if we knew a minimal amount of each feature it will be possible to cluster rows and columns into groups. Figure \ref{fig:u_v_cluster} shows the features of U and V clustered into 3 different groups\footnote{3 was arbitrarily chosen as the number of clusters}. In the case of drug-target interaction database dimension 1 could represent the estimated presence of a chemical, say $H_2O$ and the second dimension of the presence that represents the presence of another chemical.
 
 In collaborative filtering we seek to infer these features to best reconstruct the full matrix. The idea behind clustered sample selection is to target the groups with the least certainty, to improve their accuracy and the model as a whole. In a movie-user scenario this means that we can separate the thriller film liking users from the drama movie liking users, then if we find out that less is know on thriller liking people then the model should be better off learning an extra datapoint on that group. This would allow for row selection and the selection of columns can be done in a similar way. We will define knowledge in the same way as minimum knowledge search, as the fraction of known rows and columns.
 
@@ -74,7 +74,7 @@ The first step involves determining the ideal number of clusters for a dataset. 
 \end{algorithmic}
 \end{algorithm}
 
-Once we have determined the number of clusters, we cluster the rows and columns according to the features of $U$ and $V$ using a clustering algorithm. K-means was chosen for being fast yet good at clustering. Alternatives such as GMM were considered but found to not be appropriate due to their great increase in complexity and little increase in clustering quality.
+Once we have determined the number of clusters, we cluster the rows and columns according to the features of $U$ and $V$ using a clustering algorithm. K-means was chosen for being fast yet good at clustering. Alternatives such as GMM were considered but found to not be appropriate due to their great increase in complexity and little increase in clustering quality - further work could look into better clustering algorithm.
 
 \nomenclature{GMM}{Gaussian Mixture Model - A probabilistic model for representing the presence of subsets within an overall dataset}
 
