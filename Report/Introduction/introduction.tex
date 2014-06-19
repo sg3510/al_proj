@@ -61,7 +61,7 @@ Also in databases such as the movielens one\footnote{\url{http://grouplens.org/d
 \draw (analysis) edge[out=-30, in=100,->] (desc);
 \end{tikzpicture}
 \end{figure*}
-A typical recommender system works by having multiple data processing stages and active sample selection is part of one of those steps (Figure~\ref*{fig:RecSysDiagram}, explained more in detailed in the Background section, provides a quick overview fo these steps). Thus the first aim is to build a working but flexible recommender system which would integration active sample selection. It is expected to base the recommender system on a collaborative filtering model called Probabilistic Matrix Factorization (PMF), which is based on the work of \cite{pmf}. This is because current active sample selection work is often based on this model and this model performs well on large sparse datasets. A library or premade model will not be used as it is less flexible and does not have a useful learning process that will help give insight into the inner workings of a recommender system.
+A typical recommender system works by having multiple data processing stages and active sample selection is part of one of those steps (Figure~\ref*{fig:RecSysDiagram}, explained more in detailed in the Background section, provides a quick overview fo these steps). Thus the first aim is to build a working but flexible recommender system which would include active sample selection. It is expected to base the recommender system on a collaborative filtering model called Probabilistic Matrix Factorization (PMF), which is based on the work of \cite{pmf}. This is because current active sample selection work is often based on this model and this model performs well on large sparse datasets. A library or premade model will not be used as it is less flexible and does not have a useful learning process that will help give insight into the inner workings of a recommender system.
 
 To test the recommender system sample datasets will be used. Several datasets have been identified due to their popularity in recommender systems literature:
 \begin{description}[style=standard,leftmargin=.7cm,font=\bfseries]
@@ -70,12 +70,11 @@ To test the recommender system sample datasets will be used. Several datasets ha
   \item[Active Learning Challenge] Rather than one dataset, this is a set of datasets used explicitly for an active learning competition, sponsored by two journals \cite{al-chall}. The datasets contained are :
   \begin{itemize}
   \item \underline{HIVA} is a dataset aimed at predicting which compounds are active against the AIDS HIV infection.
-  \item \underline{IBN\_SINA} is a dataset of arabic words in an ancient manuscript to facilitate indexing.
   \item \underline{ORANGE} is a noisy marketing dataset. The goal is to predict the likelihood of customers to change network provider, buy complimentary or value-added products or services. 
   \end{itemize}
 \end{description}
 
-Small versions (100 thousand entries) of the datasets will be used for development purposes and performance (with respect to error rate and computational intensity) and larger scale use is used for further testing.
+Small versions (100 thousand entries) of the datasets will be used for development purposes and performance (with respect to error rate and computational intensity) and larger scale use is used for further testing. Synthetic datasets and images will also be used.
 
 Once a working implementation of a recommender system is achieved (this will be done by checking for an acceptable prediction/error rate on the provided test set) focus will be on implementing the work of Sutherland et al.\cite{active-mf}, where his work is made available on his website.
 
