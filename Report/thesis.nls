@@ -1,0 +1,34 @@
+\begin{thenomenclature} 
+
+ \nomgroup{A}
+
+  \item [{BPMF}]\begingroup Bayesian Probabilistic Matrix Factorisation\nomeqref {2.0}
+		\nompageref{5}
+  \item [{CF}]\begingroup Collaborative Filtering\nomeqref {2.0}
+		\nompageref{5}
+  \item [{CKS}]\begingroup Clustered Knowledge Search - Active sampling algorithm described in section \ref{sec:cks}\nomeqref {4.0}
+		\nompageref{35}
+  \item [{GMM}]\begingroup Gaussian Mixture Model - A probabilistic model for representing the presence of subsets within an overall dataset\nomeqref {4.0}
+		\nompageref{32}
+  \item [{K-Means}]\begingroup K-Means Clustering - A popular algorithm for cluster analysis, which separates $N$ data points into $K$ clusters around centroids\nomeqref {4.0}
+		\nompageref{32}
+  \item [{KMPF}]\begingroup Kernelized Probabilistic Matrix Factorisation\nomeqref {2.6}
+		\nompageref{12}
+  \item [{MCMC}]\begingroup Markov chain Monte Carlo - A means of approximating a probability distribution\nomeqref {2.6}
+		\nompageref{11}
+  \item [{MKS}]\begingroup Minimum Knowledge Search - Active sampling algorithm described in section \ref{sec:mks_alg}\nomeqref {4.0}
+		\nompageref{35}
+  \item [{MMMF}]\begingroup Maximum Margin Matrix Factorization - A collaborative prediction algorithm using low-norm instead of low-rank factorizations\nomeqref {4.0}
+		\nompageref{35}
+  \item [{MN-V}]\begingroup Matrix-Normal Variational framework - Variational inference of the probability distribution of data in a matrix assuming Gaussian distribution\nomeqref {4.0}
+		\nompageref{35}
+  \item [{PMF}]\begingroup Probabilistic Matrix Factorisation\nomeqref {2.0}
+		\nompageref{5}
+  \item [{PPMF}]\begingroup Parametric PMF -  PMF and BPMF hybrid, uses variational inference for its learning process\nomeqref {5.0}
+		\nompageref{50}
+  \item [{RMSE}]\begingroup Root Mean Square Error -  Measure of differences between values predicted by a model and the actual values:  $\sqrt{\frac{1}{N} \sum\nolimits_{i=1}^{N}(\hat{x}_i-x_i)^2}$\nomeqref {2.0}
+		\nompageref{5}
+  \item [{SVD}]\begingroup Singular Value Decomposition - A method to decompose a matrix into smaller dimension matrices\nomeqref {2.0}
+		\nompageref{6}
+
+\end{thenomenclature}
