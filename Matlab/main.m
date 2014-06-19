@@ -40,6 +40,14 @@ lambda_pmf = 0.01; % Regularisation
 mu_pmf = 0.005; % Learning rate
 iter_pmf = 100; % Iterations
 
+% BPMF Settings
+beta_bpmf = 3.5; % Precision
+iter_bpmf = 15; % Iterations
+
+% KMPF settings
+iter_kmpf = 75; % Iterations
+epsilon_kpmf = 0.005; % Learning rate
+diffu_kmpf = 0.1; %Diffusion value if using dissuion kernel
 %% Setup for Active Sampling Process
 
 % Initialise sampling variables
@@ -85,6 +93,14 @@ for req = 1:samples
         case 1 % PMF
             [U_rand,V_rand,~ ] = pmf_func_val(R_train_rand, z_train_rand,R_val,z_val, iter_pmf,num_feat,lambda_pmf,mu_pmf);
             R_pred_rand = U_rand*V_rand';
+        case 2 % BPMF
+            %Train first for PMF
+            [U_rand,V_rand,~ ] = pmf_func_val(R_train_rand, z_train_rand,R_val,z_val, 50,num_feat,lambda_pmf,mu_pmf);
+            [U_rand,V_rand,~,mv_rand] = bpmf_func(R_train_rand,z_train_rand,U_rand,V_rand,iter_bpmf,num_feat,beta_bpmf);
+            R_pred_rand = U_rand*V_rand' + mv_rand;
+        case 3 % KPMF
+            [U_rand,V_rand,~] = kpmf_func(R_train_rand,z_train_rand,iter_kmpf,num_feat,epsilon_kpmf,diffu_kmpf);
+            _pred_rand = U_rand*V_rand';
         case 4 % PPMF
             [ U_rand,V_rand,mv_rand ] = run_ppmf(R_train_rand, z_train_rand,num_feat, R_val,z_val);
             R_pred_rand = U_rand*V_rand' + mv_rand;
@@ -143,6 +159,14 @@ for req = 1:samples
         case 1 % PMF
             [U_targ,V_targ,~ ] = pmf_func_val(R_train_targ, z_train_targ,R_val,z_val, iter_pmf,num_feat,lambda_pmf,mu_pmf);
             R_pred_targ = U_targ*V_targ';
+        case 2 % BPMF
+            %Train first for PMF
+            [U_targ,V_targ,~ ] = pmf_func_val(R_train_targ, z_train_targ,R_val,z_val, 50,num_feat,lambda_pmf,mu_pmf);
+            [U_targ,V_targ,~,mv_targ] = bpmf_func(R_train_targ,z_train_targ,U_targ,V_targ,iter_bpmf,num_feat,beta_bpmf);
+            R_pred_targ = U_targ*V_targ' + mv_targ;
+        case 3 % KPMF
+            [U_targ,V_targ,~] = kpmf_func(R_train_targ,z_train_targ,iter_kmpf,num_feat,epsilon_kpmf,diffu_kmpf);
+            R_pred_targ = U_targ*V_targ';
         case 4 % PPMF
             [ U_targ,V_targ,mv_targ ] = run_ppmf(R_train_targ, z_train_targ,num_feat, R_val,z_val);
             R_pred_targ = U_targ*V_targ' + mv_targ;
@@ -164,6 +188,7 @@ for req = 1:samples
     plot([smooth(err_rand(1:req),30) smooth(err_targ(1:req),30)])
     legend('Random','Targeted')
     title(sprintf('Target Advantage:%1.3f',sum(err_rand)/sum(err_targ)))
+    ylabel('RMSE')
     subplot(2,3,2);
     
     image(sample_rand/req*50)
