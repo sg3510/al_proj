@@ -1,0 +1,158 @@
+\chapter{Active Sample Selection}
+\ifpdf
+    \graphicspath{{Chapter2/Chapter2Figs/PNG/}{Chapter2/Chapter2Figs/PDF/}{Chapter2/Chapter2Figs/}}
+\else
+    \graphicspath{{Chapter2/Chapter2Figs/EPS/}{Chapter2/Chapter2Figs/}}
+\fi
+\markright{\thechapter. Active Sample Selection}
+\section{Background}
+
+%\markboth{\MakeUppercase{\thechapter. My Second Chapter }}
+Now that we have a good understanding of what matrix factorisation can do we focus on active learning. Typical collaborative filtering system applications are done online. This means that once a base model is learnt it evolves over time by adding new samples. For example Amazon would gradually add samples of products a user has rated, improving its model. In others contexts a research laboratory will be conducting experiments on drug-biological targets and gradually adding the results of each experiment to a database. All of these situations involve a new row-column combination being sampled. Choosing the new sample can be a matter of human judgement but cannot guarantee model improvement. Active sample selection is the process of intelligently selecting a new sample that best increases the models performance.
+
+%\begin{figure}[!htbp]
+\begin{figure}[H]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[width=\textwidth]{RS-ALdiag}
+    \else
+      \includegraphics[bb = 92 86 545 742, width=\textwidth]{RS-ALdiag}
+    \fi
+    \end{center}
+Users are represented in rows, and there has been 3 type of users deﬁned, dark blue, light blue and green. Items are represented in the columns by letters. User item pairs that are rated are represented by a shade of grey and unrated squares are left blank.
+    \caption{Diagram of a simpliﬁed user-item matrix used for recommender systems}
+    \label{fig:al-diag}
+\end{figure}
+
+Figure \ref{fig:al-diag} gives us a very simplified graphical explanation of what an active learning system can achieve. To the left we have a sparse user-item matrix, each coloured square represents a rating, with the intensity representing a rating or interaction (for example black could represent 4, dark grey 3, light grey 2 and white 1). To simplify, we can assume that the system has recognised that there are 3 types of user groups, light blue, dark blue and green. Each of these user groups have the same interests. Using a film database analogy, a green user could be an action movie fan whereas light blue users could be comedy aficionados. Thus if it needed to predict what the rating \texttt{a2} would be, extra sampling would not really be useful as we know \texttt{a4}, \texttt{a8} and \texttt{a11}, which are all part of the green group. Knowing \texttt{a2}, along with \texttt{b5} and other pink ratings (from the right matrix) is of little use. However knowing just one of \texttt{a1-5-7-9} and \texttt{a3-6-10-12} is very useful as it gives us a rough idea as to what light and dark blue users think of item \texttt{a}. Collecting samples for users we already have a reasonably good profile of only helps us improve the certainty of certain ratings rather than be able to say something new about the dataset. Again it may be the case that the item rating isn't the same for one user group but this is an idealistic scenario.
+
+
+\section{Measuring Effectiveness}
+Determining whether or not a sampling method is effective or not is mainly a matter of seeing how well it impacts the performance. For example if the average sample added to a model leads to a 0.01 RMSE decrease and we can select the ones leading to 0.02 RMSE decrease on average then it can be said that this is effective. The benchmark case is defined to be random sampling, that is choosing a new sample at random. As random sampling may select an informative sample just as well as a less useful one, many random sampling trials must be done and averaged together to see the expected random performance. The benchmark RMSE for random sampling can be seen in the appendix figure \ref{fig:RandomPMF}. This is because one random sampling instance may outperform a poor active sampling method. Figure \ref{fig:al_minknowl} shows a case of random sampling performing as well or outperforming an active sampling method (in this case this is a basic one developed for this project called minimum knowledge search).
+
+\begin{figure}[!htbp]
+  \begin{center}
+    \includegraphics[width=\textwidth]{min_knowl_rate}
+    Each iteration involves the discovery of one new sample. Dataset is the synthetic one from figure \ref{fig:5pcmat}.
+    \caption{Active Sampling trial for the "minimum knowledge" selection}
+    \label{fig:al_minknowl}
+  \end{center}
+\end{figure}
+
+Another measure of the active sampling algorithm is to compare the area under the curve of the RMSE over the number of discovered samples. This measure gives an idea of what total advantage the targeted sampling may have.
+
+
+
+It is important to be consistent with what model is used to predict data as some samples may be more useful for one model than an another. For example one model, like BPMF, will perform well by knowing a bit of everything to infer a posterior distribution of data, however PMF which does not do this will not find this sample as useful.
+
+Effectiveness could also be linked to individual RMSE decrease, that is when a sample is discovered the amount by which it has decreased RMSE is used to rate how useful it has been. This can be a somewhat subjective error as the more about a model is know the harder RMSE decrease is.
+
+\subsection{Discrete vs Continuous Data}
+RMSE will be different for discrete and continuous data due to the way it is post-processed. Continuous data, obtained from $\hat{R}=U^TV$, is left untouched and used to calculate RMSE. For discrete data the values of $\hat{R}$ are first bounded between the minimum and maximum, for example 1 and 5 for film ratings. After this $\hat{R}$ is rounded to the nearest number in the discrete set. Error can then be calculate as traditional RMSE or as number of correct(sometimes referred to as positive) samples \cite{recsyshand}.
+\section{Formal Definition}
+The mask matrix $Z$ is used to determine whether a value is known (or more accurately, part of the training set, the training set mask is called $Z_{tr}$). Its indices are the same as $R$ except that values can only be $0$ or $1$. The known values are represented by $1$ and form the set $\mathcal{O}$. In other words $R_\mathcal{O}$ is the matrix of the known values. We will also have the pool of queriable samples $\mathcal{P}$, that is the samples not yet known but that may be requested. Note that it is not always the case that $R_{\mathcal{O}} \cap R_{\mathcal{P}} = R$ as there may be unqueriable unknown samples. The samples queried part of the active sampling process will form the set $\mathcal{A}$, with $R_{\mathcal{A}}$ being the requested values. In graphical form the matrix representing $\mathcal{A}$ will usually be coloured. White represents the unrequested samples and the coloured cells represent the order of sampling.
+
+
+\section{Goals of Active Sampling}
+\label{sec:as_goals}
+To select certain samples some aspects which are thought to be able to reduce RMSE better than random selection are outlined.
+
+\begin{description}[style=standard,leftmargin=.7cm,font=\bfseries]
+  \item[Model] Look at samples that may produce the greatest change in the parameters $U$ and $V$, with he hope that this will mean a large change towards the true distribution.
+  \item[Sample Uncertainty] Try to seek the samples that are most likely to vary based on current distribution of parameters, that is their uncertainty.
+  \item[Knowledge] How much is known about a current row or column and aiming to maximise this overall, with the aim of getting a global insight of the data.
+  \item[Max-Minimum] To best determine the boundaries of the data the largest and smallest estimated values are queried with the aim of minimising over and under estimation error.
+\end{description}
+
+
+\section{Minimum Knowledge Search}
+\label{sec:mks_alg}
+%\markboth{\MakeUppercase{\thechapter. My Second Chapter }}
+Before looking at advanced sampling techniques a basic one was made to illustrate the concepts and basic increase in performance possible.
+\subsection{Algorithm}
+For any matrix factorisation problem we have the mask matrix $Z \in \mathbb{R}^{M \times N}$, with elements being 1 for every known value and 0 for every unknown value (values in the validation set would be also 0).
+
+\begin{algorithm}
+\caption{Minimum Knowledge Search algorithm}\label{alg:min_knowl}
+\begin{algorithmic}[1]
+\Procedure{MinKnowSearch}{$Z$}\Comment{The mask matrix as input}
+\State $\mathbf{a} \gets \text{meanrow}(Z)$ \Comment{Mean of rows, $\mathbf{a} \in \mathbb{R}^N$}
+\State $\mathbf{b} \gets \text{meancol}(Z)$ \Comment{Mean of columns, $\mathbf{b} \in \mathbb{R}^M$}
+\State $K \gets \mathbf{a} \cdot \mathbf{b}$ \Comment{ $K \in \mathbb{R}^{M\times N}$}
+\State $x,y \gets index\_of\_min(K)$ \Comment{Often multiple candidates, select first one}
+\While{$Z(x,y)==1$}\Comment{Also check for validation mask}
+\State $x,y \gets next\_min\_index(K)$
+\EndWhile
+\State \textbf{return} $x,y$\Comment{Return $x,y$ that has least knowledge}
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+Knowing a bit about each column and row is a good first step to discover more about a matrix. This is the motivation of creating a heatmap of what we know about each cell. To do this we take the mean of the row and columns of $Z$. Say $\mathbf{a}=meanrow(Z)$ and $\mathbf{b}=meancolumn(Z)$. This defines the amount known for each row and column - i.e. if $\mathbf{a}_i = 0$ then there is no known sample of row $i$, if $\mathbf{b}_j = 1$ then we know all samples of column $j$. From this we can get a knowledge matrix $K= \mathbf{a} \cdot \mathbf{b}$, which acts as a heatmap of what is known of $R$. From this we can find the cells with the minimum values and target them. There will often be multiple cells of lower value but not all may be available. For example it may be impossible to sample them or it may be a cell in the validation set. For this reason we select the lowest compatible cell. The full algorithm is described in algorithm \ref{alg:min_knowl}.
+
+\begin{figure}[!htbp]
+  \begin{center}
+    \resizebox{\textwidth}{!}{\input{Chapter2/Chapter2Figs/search_mat.tikz}}
+  \end{center}
+  The darker the colour in the knowledge matrix, the least is known about that cell due to the column-row combination.
+    \caption{Diagram of initial parameters and search path}
+    \label{fig:min_know_search}
+\end{figure}
+
+Figure \ref{fig:min_know_search} illustrates the way minimum knowledge search works. From the known samples we see that the knowledge matrix has many "low knowledge" areas (in dark blue) to select from. A sequence of 200 sample selections is shown on the rightmost image. The first samples are blue in color, tending to red as the final samples are targeted (as shown by the colour legend to the left of it). As we see it selects the least known elements in the first row then column first. The pattern is due to selecting the very first possible least known element - a variant would be to randomly select an element to potentially try and get a temporary advantage.
+
+\textit{Note:} Other variants of this algorithm that were tried included selecting the minimum suitable index of $\mathbf{a}$ and $\mathbf{b}$ - i.e. the coordinates that intersect with the least known row and column. However this technique did not perform as well due to not seeking to maximise one row and column first at the start. The random minimum knowledge matrix selection variant also suffers from this.
+
+
+\subsection{Notes on performance}
+
+To better compare sampling algorithms we benchmark them against random sampling by defining the advantage value as 
+\begin{align*}
+\frac{\text{RMSE Area under random selection}}{\text{RMSE Area under targeted selection}}
+\end{align*}
+
+
+\begin{figure}[!htbp]
+  \begin{center}
+    \resizebox{\textwidth}{!}{\input{Chapter2/Chapter2Figs/mks.tikz}}
+  \end{center}
+  Over 10 online trials, minimum knowledge search advantage was $1.043$. Final random RMSE:1.390, targeted RMSE:1.289.
+  
+   Over 10 offline trials, minimum knowledge search advantage was $1.017$. Final random RMSE:1.120, targeted RMSE:1.087. 
+    
+Carried out on the sample synthetic dataset with 1.25\% of samples initially discovered.  $\lambda = 0.01$, $D=7$
+    \caption{RMSE vs Samples Discovered for Online PMF}
+    \label{fig:online_pmf_active}
+\end{figure}
+
+
+Figure \ref{fig:online_pmf_active} shows the change in RMSE over time as a function of discovered samples. From this it can be seen that Minimum Knowledge Search works well on the synthetic dataset compared to random sampling, nearly always outperforming it. This is in part due to the nature of the data, which has most rows and columns containing a similar level of information that their neighbours, thus a search to find out more about the average row and column is preferred and useful. However, should most of the information only be contained in one area of the matrix then the performance would not be as satisfactory. For datasets of very low variance or uniform regions, this search could perform even better. This search method was tested on non-synthetic data, trying to recover an Eiffel Tower image, as seen in appendix figure \ref{fig:eiffel_active_mks}. As this is a somewhat uniform picture (a sky and just a structure) minimum knowledge search performed very well - 12\% advantage in this case.
+\begin{figure}%
+    \centering
+    \subfloat[10 new samples]{{\includegraphics[width=0.25\textwidth]{know-10} }}%
+    \qquad
+    \subfloat[50 new samples]{{\includegraphics[width=0.25\textwidth]{know-50} }}%
+    \qquad
+    \subfloat[200 new samples]{{\includegraphics[width=0.25\textwidth]{know-200} }}%
+    
+    Knowledge scaled is same as figure \ref{fig:min_know_search} - the darker the blue the less is known.
+    \caption{Evolution of Knowledge Matrix over time}%
+    \label{fig:know_mat_it}
+\end{figure}
+
+The main weakness in this algorithm is described in figure \ref{fig:know_mat_it}. As it targets the row-column combinations with the least knowledge the number of samples available for selection at each step can actually increase due to the matrix becoming more uniform. Thus the potential for sample discrimination decreases over time and the advantage only exists during initial matrix sampling. Initialising a search trial with many more known samples can cause minimum knowledge search to perform 20\% worse \footnote{In terms of advantage value}.
+
+\subsection{Comments}
+The minimum knowledge search algorithm does not take the known matrix elements, nor the predicted ones, into consideration. These also contain information in themselves and could greatly help with the selection of better samples. Being dataset agnostic is an weakness of minimum knowledge search as dataset properties can greatly impact performance. For example a dataset where a row and column that has most of the less useful elements known but very useful unknown elements will not be targeted until very late on, potentially giving the random sampling an edge. Minimum knowledge search only really works on datasets where useful elements are not found in clusters.
+
+Additionally the aim of homogenising the amount known in each column and row is not always possible in constrained situations where the sampling space is limited, that is a sample determined for selection is not available(i.e. it may not be possible to ask a user his 5 star rating of a film if he hasn't seen it).
+
+Algorithms presented later on will take advantage of the dataset to try and get better performance.
+
+% ------------------------------------------------------------------------
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End: 

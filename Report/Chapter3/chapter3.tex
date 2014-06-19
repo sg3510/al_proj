@@ -1,0 +1,474 @@
+\chapter{Advanced Sample Selection}
+\ifpdf
+    \graphicspath{{Chapter3/Chapter3Figs/PNG/}{Chapter3/Chapter3Figs/PDF/}{Chapter3/Chapter3Figs/}}
+\else
+    \graphicspath{{Chapter3/Chapter3Figs/EPS/}{Chapter3/Chapter3Figs/}}
+\fi
+
+
+Now that we have a good idea of what active sampling involves attention will be focused to more advanced algorithms with the aim of improving performance.
+\section{Clustered Knowledge Sampling}
+\label{sec:cks}
+\markboth{\MakeUppercase{\thechapter. Advanced Sample Selection }}{\thechapter. Advanced Sample Selection}
+In the proposed minimum knowledge search algorithm (section \ref{sec:mks_alg}), its poor performance was mainly due to ignoring the data and only focusing on the mask matrix, which homogenised the amount of known samples. This had two problems, one in situations with search space constraints and the other for actually ignoring data and not taking "information" into account.
+
+
+\subsection{Outline}
+
+\begin{figure}[!htbp]
+  \begin{center}
+    \resizebox{\textwidth}{!}{\input{Chapter3/Chapter3Figs/u_v_cluster.tikz}}
+  \end{center}
+    
+$U$ and $V$ from synthetic dataset with 15\% of samples initially discovered.  $\lambda = 0.01$, $D=7$
+
+Dimensions reduced for plotting purposes
+    \caption{Sample k-means clustering of U and V by features}
+    \label{fig:u_v_cluster}
+\end{figure}
+
+Minimum knowledge search failed to integrate information about the known data to target more informative samples. Here we decide to take advantage of the $U$ and $V$ matrices formed during matrix factorisation , as in equation \ref{eq:rsimeq}. Each of the columns of $U$ and $V$ are supposed to represent features of the related row or column. We now assume that if we knew a minimal amount of each feature it will be possible to cluster rows and columns into groups. Figure \ref{fig:u_v_cluster} shows the features of U and V clustered into 3 different groups\footnote{3 was arbitrarily chosen as the number of clusters}. In the case of drug-target interaction database dimension 1 could represent the estimated presence of a chemical, say $H_2O$ and the second dimension of the presence that represents the presence of another chemical.
+
+In collaborative filtering we seek to infer these features to best reconstruct the full matrix. The idea behind clustered sample selection is to target the groups with the least certainty, to improve their accuracy and the model as a whole. In a movie-user scenario this means that we can separate the thriller film liking users from the drama movie liking users, then if we find out that less is know on thriller liking people then the model should be better off learning an extra datapoint on that group. This would allow for row selection and the selection of columns can be done in a similar way. We will define knowledge in the same way as minimum knowledge search, as the fraction of known rows and columns.
+
+
+
+\subsection{Algorithm}
+
+We base the work of the clustered knowledge search on the minimum knowledge search algorithm, in that we will target not the specfic row-column combination we know less about but the row-colum cluster we know the less about. 
+
+The first step involves determining the ideal number of clusters for a dataset. In itself this is not an easy task and can increase algorithm complexity due to having to test for all different candidate number of clusters. To determine the number of clusters we use the silhouette measure \cite{kmean-sil} which essentially measures how tight data is when in a group. It is not always effective but does the job. 
+%Explain how to cluster in silhoutettes
+
+
+
+\begin{algorithm}
+\caption{Clustered Knowledge Search algorithm}\label{alg:cks}
+\begin{algorithmic}[1]
+\Procedure{ClusKnowSearch}{$U$,$V$,$Z$}
+\State $k_U \gets \text{NumOfClust}(U)$ \Comment{Returns best guess of number of clusters}
+\State $k_V \gets \text{NumOfClust}(V)$
+\State $u_{\text{clusters}} = \text{kmeans}(U,k_U)$ \Comment{Assigns cluster IDs}
+\State $v_{\text{clusters}} = \text{kmeans}(V,k_V)$
+\State $\mathbf{u_{info}} \gets \text{meanrow}(Z)$ \Comment{$\in \mathbb{R}^N$}
+\State $\mathbf{v_{info}} \gets \text{meancol}(Z)$ \Comment{$\in \mathbb{R}^M$}
+\State $\mathbf{a} \gets \mathbf{0}^{N}$ \Comment{$\in \mathbb{R}^N$}
+\State $\mathbf{b} \gets \mathbf{0}^{M}$ \Comment{$\in \mathbb{R}^M$}
+\For{$i=1\dots k_U$}
+\State $\mathbf{u_{knowl}}[i] \gets \sum\limits_{\text{index}=i} \mathbf{u_{info}}$ \Comment{Adds up all info values}
+\State $\mathbf{a}[{index\; u_{\text{clusters}} =i}] = \mathbf{u_{knowl}}[i]$ \Comment{Assigns sum of info to clusters}
+\EndFor
+
+\For{$j=1\dots k_V$}
+\State $\mathbf{v_{knowl}}[j] \gets \sum\limits_{\text{index}=j} \mathbf{v_{info}}$
+\State $\mathbf{b}[{index\; v_{\text{clusters}} =j}] = \mathbf{v_{knowl}}[j]$
+\EndFor
+
+\State $K \gets \mathbf{a}^T \cdot \mathbf{b}$ \Comment{ $K \in \mathbb{R}^{M\times N}$}
+\State $x,y \gets index\_of\_min(K)$ \Comment{Many candidates, one is chosen at random} \label{alg:line:select}
+\While{$x,y$ not valid sample request}
+\State $x,y \gets next\_min\_index(K)$
+\EndWhile
+\State \textbf{return} $x,y$\Comment{Return $x,y$ that has least knowledge}
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+Once we have determined the number of clusters, we cluster the rows and columns according to the features of $U$ and $V$ using a clustering algorithm. K-means was chosen for being fast yet good at clustering. Alternatives such as GMM were considered but found to not be appropriate due to their great increase in complexity and little increase in clustering quality.
+
+\nomenclature{GMM}{Gaussian Mixture Model - A probabilistic model for representing the presence of subsets within an overall dataset}
+
+\nomenclature{K-Means}{K-Means Clustering - A popular algorithm for cluster analysis, which separates $N$ data points into $K$ clusters around centroids}
+
+
+From the clustered rows we create the vectors $\mathbf{a}$ and $\mathbf{b}$ which contain the amount know of each cluster. This allows the create of the knowledge matrix, $K =\mathbf{a}^T \cdot \mathbf{b}$. From this a sample is selected as in section \ref{sec:mks_alg}.
+
+This algorithm is defined formally in algorithm \ref{alg:cks}.
+%\subsubsection{Clustering observations}
+%... and some more in the first subsub section otherwise it all looks the same
+%doesn't it? well we can add some text to it ...
+
+\subsection{Performance}
+The first initial observations on the performance is that during a cold-start, that is when very little is know about the matrix, clustering will not perform well and sample selection will effectively be random. As soon as enough data is gathered a large advantage compared to random sampling is usually observed. This is because, unlike the minimum knowledge search, the search area is always restricted to a reasonably small subset.
+
+
+It will also tend to cluster currently unknown groups of data together and targeting them even later on in execution which is useful. However once the number of unknown rows and columns have fallen down it suffers from not requesting individual rows and columns with no knowledge if they are assigned to a cluster of high information - this seemed to be the main drawback from this algorithm. This can be seen from the lines in figure \ref{fig:eiffel_clustering_random} which are never requested. This is why it is preferred to randomly sample from the restricted subset (line \ref{alg:line:select} in algorithm \ref{alg:cks}) as it can mitigate this problem. In cases where the first available value of the subset is selected, the algorithm was found to sometimes perform worse than random in very late stages, due to removing the ability to sample from certain, useful, areas.
+
+
+
+\begin{figure}[!htbp]
+  \begin{center}
+    \resizebox{\textwidth}{!}{\input{Chapter3/Chapter3Figs/eiffel_clustering_random.tikz}}
+  \end{center}
+    
+5\% of samples initially discovered.  PMF $\lambda = 0.01$, $D=15$
+
+ The targeted samples matrix uses the same scale as in figure \ref{fig:min_know_search}. The darker blue the colour is the earlier on it was targeted.
+ 
+ Blue line is targeted sampling and green on is random sampling.
+ 
+ 
+ The random subgroup sampling method was employed for algorithm \ref{alg:cks}
+    \caption{Clustering Knowledge Search on Eiffel Tower Image}
+    \label{fig:eiffel_clustering_random}
+\end{figure}
+%Not good at the very start nor at the very end
+%very weakness in the clustering
+
+In figure \ref{fig:eiffel_clustering_random} we see from the targeted samples matrix that the search first started a bit randomly (the scatter blue points) and that as data was gathered the areas with higher data variance were targeted, that is the groups belonging to level 1 and 2 of the Eiffel tower. A realtime simulation of allows us to see that the sky area of the picture is discovered early on and then ignored in favour of the more complex areas of the structure.
+
+
+\begin{figure}[!htbp]
+  \begin{center}
+    \resizebox{\textwidth}{!}{\input{Chapter3/Chapter3Figs/synthetic_cks_rand.tikz}}
+  \end{center}
+    
+1.25\% of samples initially discovered. Offline PMF $\lambda = 0.01$, $D=7$
+ 
+ Random sampling RMSE curve is average of 10 trials. On average CKS performs 5\% better over 500 samples.
+ 
+ The random subgroup sampling method was employed for algorithm \ref{alg:cks}
+    \caption{Clustering Knowledge Search on Synthetic Data}
+    \label{fig:synthetic_cks_rand}
+\end{figure}
+
+
+The eiffel tower image, while real word data, has very uneven groups (about 70\% is sky) and has very high dimensions for reconstruction. Thus it is more informative to see how CKS performs on low rank data that resembles that of a movie recommendation system. This is done in figure \ref{fig:synthetic_cks_rand} on synthetic data. This time the increase in performance is obvious - the minimum knowledge search had a random advantage of 1.017 compared to 1.071 for MKS over 500 new requested samples. Additionally CKS led to CKS RMSE being consistently under the random RMSE curve over trials carried out on synthetic data. From the targeted samples matrix, constructed in the same way as figure \ref{fig:eiffel_clustering_random}, we can see the search strategy CKS employs, first randomly targeted samples where little is know and then moving on to specific films and users. The advantages of using the currently known data as well as the mask matrix is clear, in contrast to MKS ignoring the underlying data.
+
+
+The complexity of CKS is bounded by that of the clustering stage, which for K-Means is $O(n^{Dk+1} \ln n)$. $k$ is the number of clusters and $n$ of data-points.
+
+\nomenclature{CKS}{Clustered Knowledge Search - Active sampling algorithm described in section \ref{sec:cks}}
+\nomenclature{MKS}{Minimum Knowledge Search - Active sampling algorithm described in section \ref{sec:mks_alg}}
+\subsection{Improvements and Limitations}
+Some improvements involve more effectively detecting outliers. For example in figure \ref{fig:u_v_cluster} there is a clear outlier in the red row cluster. Detecting these and considering them separately would help avoid some of the problems detected in figure \ref{fig:eiffel_clustering_random} and demonstrated on synthetic data in appendix figure \ref{fig:cks_end_synth}. This can be as simple as changing clustering algorithm - though this will increase complexity. Related to this would be the ability to deal with uneven clusters, for example in the case of an image there can be very even areas, such as the sky, yet very little is needed to be known due to the uniform colour.
+
+Also for high dimension data, clustering is not always reliable \cite{highdim-clust}. Thus if a high feature dimension for $U$ and $V$ is chosen some pre-processing such as PCA to reduce dimension should be considered.
+
+It would also be useful to use side information when clustering rows and columns. For example in a user-item scenario the user age and gender could be useful in better clustering.
+
+Finally the issue of differently sized clusters can be an issue while targeting, as is expanded upon later on in section \ref{sec:cks_mcmc_imp}.  
+
+
+
+\section{Cell Specific Search Methods}
+%\markboth{\MakeUppercase{\thechapter. My Third Chapter }}{\thechapter. My Third Chapter}
+In the methods outlined above samples were targeted by restricting the search space in some way to allow choosing one particular sample that satisfied the requirements. Sutherland et al. \cite{active-mf} outline active sampling methods that give a criteria for selecting specific cells. An overview of their performance is given in figure \ref{fig:sutherland_alg}.
+\begin{figure}[!htbp]
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[width=\textwidth]{SutherlandPerformance}
+    \else
+      \includegraphics[bb = 92 86 545 742, width=\textwidth]{SutherlandPerformance}
+    \fi
+    \end{center}
+This figure from Sutherland et al.'s paper \cite{active-mf} gives the prediction results of various techniques observed. The Area under RMSE advantage curve values represent the results of five runs of a $10 \times 10$ rank 1 continuous synthetic experiment against random sampling. Thus a negative value represents a method outperforming random selection.
+  \begin{center}
+    \leavevmode
+    \ifpdf
+      \includegraphics[width=\textwidth]{SutherlandPerformance_disc}
+    \else
+      \includegraphics[bb = 92 86 545 742, width=\textwidth]{SutherlandPerformance_disc}
+    \fi
+    \end{center}
+This figure gives the prediction results of various techniques observed for a synthetic discrete dataset. This time the measure is the number of useful values queried in a  $10 \times 10$ rank 4 discrete synthetic experiment against random sampling. A positive value represents a method outperforming random selection.
+
+    \caption{Outline of the performance of algorithms proposed by Sutherland et al.}
+    \label{fig:sutherland_alg}
+\end{figure}
+\nomenclature{MN-V}{Matrix-Normal Variational framework - Variational inference of the probability distribution of data in a matrix assuming Gaussian distribution}
+
+\nomenclature{MMMF}{Maximum Margin Matrix Factorization - A collaborative prediction algorithm using low-norm instead of low-rank factorizations}
+
+As can be seen, not all proposed methods performed well and even underperformed random selection. For this reason all Maximum Margin Matrix Factorization based methods are ignored, having little significant improvement over random selection. The two methods that exhibited good performance over the discrete and continuous datasets where the $\mathrm{Var}[R_{ij} \mid R_\mathcal{O}]$ searches, under Matrix-Normal and MCMC approximations. Thus, these will be the two algorithms implemented to be tested.
+
+\section{Matrix-Normal Variance Search}
+\label{sec:mnvar}
+Here the idea is to infer the variance of unknown samples to be able to choose on to target. The variance is used as a proxy for uncertainty, where samples with a high variance are assumed to be the most "uncertain", due to being able to vary more.
+\subsection{Derivation}
+The value we seek for each sample is the variance of each individual sample given the observed set, that is $\mathrm{Var}[R_{ij} \mid R_\mathcal{O}]$. We derive it as such:
+\begin{align*}
+\mathrm{Var}[R_{ij} \mid R_\mathcal{O}] &= \mathbb{E} [\mathrm{Var}[R_{ij} \mid U,V] \mid R_\mathcal{O}] + \mathrm{Var} [\mathbb{E}[R_{ij} \mid U,V] \mid R_\mathcal{O}]\\
+&= \mathbb{E}[\sigma^2] + \mathrm{Var}[\mathbf{u}_i^T \mathbf{v}_j \mid R_\mathcal{O}] \\
+\mathrm{Var}[\mathbf{u}_i^T \mathbf{v}_j \mid R_\mathcal{O}] &= \mathrm{Var}\left[\sum\limits_{k=1}^{D} U_{ik}V_{jk} \mid R_\mathcal{O}\right] \\
+&= \sum\limits_{k=1}^{D} \sum\limits_{l=1}^{D} \mathrm{Cov}[U_{ik}V_{jk},U_{il}V_{jl} \mid R_\mathcal{O}] \\
+&= \sum\limits_{k=1}^{D} \sum\limits_{l=1}^{D} \mathbb{E}[U_{ik}V_{jk}U_{il}V_{jl} \mid R_\mathcal{O}] - \mathbb{E}[U_{ik}V_{jk} \mid R_\mathcal{O}] \mathbb{E}[U_{il}V_{jl} \mid R_\mathcal{O}]\\
+\end{align*}
+
+
+As $\mathbb{E}[\sigma^2]$ is a constant, we can ignore it. Now $\mathbb{E}[U_{ik}V_{jk} \mid R_\mathcal{O}]$ and $\mathbb{E}[U_{il}V_{jl} \mid R_\mathcal{O}]$ are not yet usable in their current form, we find their value via:
+\begin{align*}
+\mathbb{E}[X_a X_b] = \mathbb{E}[X_a] \mathbb{E}[X_b] + \mathrm{Cov}[X_a, X_b] = \mu_a\mu_b + \Sigma_{a,b}
+\end{align*}
+Where $\Sigma_{a,b}$ is the covariance matrix -  $\Sigma_{ab}= \mathrm{Cov}(X_a, X_b) = \mathbb{E}\left[
+(X_a - \mu_a)(X_b - \mu_b)\right]$
+
+The expression for $\mathbb{E}[U_{ik}V_{jk}U_{il}V_{jl} \mid R_\mathcal{O}]$ is slightly more complicated and requires the use of Isserlis' theorem \cite{isserlis1918}. Note that it assumes the random variables used are normal. 
+\begin{align*}
+\mathbb{E}[X_aX_bX_cX_d] &= \mu_a\mu_b\mu_c\mu_d +\mu_c\mu_d\Sigma{a,b}+\mu_b\mu_d\Sigma_{a,c}+\mu_b\mu_c\Sigma_{a,d}+\mu_a\mu_d\Sigma_{b,c}+\mu_a\mu_c\Sigma_{b,d}\\
+&+\mu_a\mu_b\Sigma_{c,d} + \Sigma_{a,b}\Sigma_{c,d} + \Sigma_{a,c}\Sigma_{b,d} + \Sigma_{a,d}\Sigma_{b,c}
+\end{align*}
+
+To move from the $a,b,c,d$ coordinate system to $i,j,k,l$ to calculate $\mathrm{Var}[\mathbf{u}_i^T \mathbf{v}_j \mid R_\mathcal{O}]$ we create what is called the Matrix-Normal Framework approximation, which is a multivariate matrix assuming Gaussian distribution \cite{gupta1999matrix}.  For this we build a matrix system as such \cite{active-mf-slides}:
+\begin{align}
+\Sigma_{ij} = \mathrm{Cov}(\left[\begin{smallmatrix} U^T\\ V^T \end{smallmatrix}\right], \left[\begin{smallmatrix} U^T\\ V^T \end{smallmatrix}\right]) &=  
+\begin{array}{c|c|c|c|c|c|c|c|c|}
+  & \mathbf{u}_1 & \mathbf{u}_2 & \mathbf{u}_3 & \mathbf{u}_4 & \mathbf{u}_5 & \mathbf{v}_1 & \mathbf{v}_2 & \mathbf{v}_3 \\ \hline
+\mathbf{u}_1  &  &   &   &   &   &  &  &  \\ \hline
+\mathbf{u}_2 &  &   &   &   &   &  &  &  \\ \hline
+\mathbf{u}_3  &  &   &   &   &   &  &  &  \\ \hline
+\mathbf{u}_4  &  &   &   &   &   &  &  &  \\ \hline
+\mathbf{u}_5  &  &   &   &   &   &  &  &  \\ \hline
+\mathbf{v}_1  &  &   &   &   &   &  &  &  \\ \hline
+\mathbf{v}_2  &  &   &   &   &   &  &  &  \\ \hline
+\mathbf{v}_3  &  &   &   &   &   &  &  &  \\ \hline
+\end{array} \label{eq:sigma_cov} \\
+\Omega_{kl} =  \mathrm{Cov}(\left[\begin{smallmatrix} U & V \end{smallmatrix}\right], \left[\begin{smallmatrix} U & V \end{smallmatrix}\right]) &= 
+\begin{array}{c|c|c|c|c|}
+  & \mathbf{f}_1 & \mathbf{f}_2 & \mathbf{f}_3 & \mathbf{f}_4  \\ \hline
+\mathbf{f}_1  &  &   &   &    \\ \hline
+\mathbf{f}_2 &  &   &   &     \\ \hline
+\mathbf{f}_3  &  &   &   &    \\ \hline
+\mathbf{f}_4  &  &   &   &    \\ \hline
+\end{array} \label{eq:omega_cov}
+\end{align}
+
+That is we assemble $U$ and $V$ into a single matrix and create the covariance matrices $\Sigma$ and $\Omega$. $\Sigma$ is the covariance of the features of each row ($U$) and column ($V$), thus $\Sigma \in \mathbb{R}^{(M+N)\times (M+N)}$. $\Omega$ is the covariance of the features themselves, thus $\Omega \in \mathbb{R}^{D\times D}$. This is used to get the full covariance matrix over all features of rows and columns by $\Sigma \otimes \Omega$.
+
+From this we can consider $U$ and $V$ to be one variable, thus $\mathbb{E}[U_{ik}V_{jl}] = \mathbb{E}[X_{a}X_{b}]$ where $a = (i,j)$ and $b=(k,l)$. This gives:
+\begin{align*}
+\mathbb{E}[X_a X_b]  &= \mu_a\mu_b + \Sigma_{a,b}\\
+&=\mathbb{E}[U_{ik}V_{jl}] = U_{ik}V_{jl} + \Sigma_{ij} \Omega_{kl}
+\end{align*}
+The indices $i,j$ refer to the $U,V$ coordinates in $\Sigma$ in equation \ref{eq:sigma_cov}. $k,l$ refers to the coordinates of the features of $\Omega$ in equation \ref{eq:omega_cov}. Note that the complexity to calculate $\Sigma$ and $\Omega$ combined is $O(D^3+(N+M)^3)$. Additionally note that $U_{ik}V_{jl}$ are used as means taken from the PMF best fit - while not ideal is an assumption required for calculation \cite{active-mf}.
+
+\subsection{Performance}
+
+This was first tested on the same $80\times 50$ synthetic data as in previous experiments and while the performance was good, it tended to "edge out" after more than 25\% of the dataset became available. A typical run is show in figure \ref{fig:MN-V-perf}. This is consistent with the performance reported by Sutherland et al. in figure \ref{fig:sutherland_alg}. 
+
+  \begin{figure}[!htbp]
+    \begin{center}
+      \resizebox{\textwidth}{!}{\input{Chapter3/Chapter3Figs/MN-V-perf.tikz}}
+    \end{center}
+    Performed on Synthetic Data.
+      \caption{Matrix Normal Maximum Variance Search}
+      \label{fig:MN-V-perf}
+  \end{figure}
+  
+  
+\subsubsection{Improving Performance}
+
+Calculating the variance has a complexity of about $O(MND^2)$ in addition to the calculation of the covariance matrices, thus calculating the criteria at each new sample is not ideal. These tweaks were done to improve performance: 
+
+\begin{description}[style=standard,leftmargin=.7cm,font=\itshape]
+  \item[Variance Matrix Calculation Update] Rather than calculating the matrix everytime a new sample comes in, we calculate the matrix at fixed intervals of incoming samples, for example after 10 have been requested.
+  \item[Memory Optimisation] There are many combinations of $\mathbb{E}[U_{ik}V_{jl}]$ over the double summation. To optimise, we use the symmetry property of the covariance matrix and locally cache already calculated values.
+  \item[Unknown Samples] We only calculate the variance for unknown samples.
+  \item[Online Updating] When $U$ and $V$ are calculated online it is also possible to gradually update the variance matrix.
+
+\end{description}
+
+Basic memory optimisation alone allowed the execution to be more than halved. In the case of a $80 \times 50$ matrix with $D=7$, from 1.81 seconds down to 0.81 seconds on average.
+
+
+\section{MCMC Variance Search}
+\label{sec:mcmcvar}
+From results obtained in simulations as well as Sutherland et al.'s we saw that the Matrix-Normal Variance Search performed reasonably well, but had instances of under performing random selection. One of the reasons for this was that the data distribution was not entirely reflected in $U$ and $V$ used to calculate $\mathrm{Var}[\mathbf{u}_i^T \mathbf{v}_j \mid R_\mathcal{O}]$. 
+\subsection{Derivation}
+Here we keep the same equations for $\mathrm{Var}[\mathbf{u}_i^T \mathbf{v}_j \mid R_\mathcal{O}]$ but instead take $U$ and $V$ from an estimate sampled across the expected distribution of data. In BPMF, section \ref{sec:bpmf}, we had $U$ and $V$ expressed as:
+
+\begin{align*}
+P(U,V|R,\Theta_U,\Theta_V) =\int \int P(R | U,V) P(U,V | R,\Theta_U,\Theta_V) P(\Theta_U,\Theta_V | \Theta_0)d\Theta_U d\Theta_V
+\end{align*}
+
+Unfortunately an analytical solution is difficult to achieve and we instead rely on approximation methods. For quick intuition on how this works consider the following, simplified, function \cite{mcmc-int}:
+\begin{align*}
+I = \int g(\theta)p(\theta)d\theta
+\end{align*}
+Where $g(\theta)$ is a function of $\theta$ and $p(\theta)$ is the distribution of this variable. In cases where this is not possible we resort to Monte-Carlo Markov Chain Integration:
+\begin{align*}
+\hat{I}_M =\frac{1}{M} \sum\limits_{i=1}^{M} g(\theta ^{(i)}) 
+\end{align*}
+
+Where $M$ is the number of values sampled and $i$ the index. We have that as $M \to \infty$, $\hat{I}_M = I$. By process of iteration and random sampling the real distribution is approached and $\hat{I}_M$ is used instead of $I$.This is the process we will use to sample from the already known values.
+
+
+ Sutherland et al.\cite{active-mf} use Hamiltonian Monte Carlo sampling methods but here we will use Gibbs Sampling, in a similar way to Salakhutdinov and Mnih \cite{SalMnih2008} in BPMF. Algorithm \ref{alg:gibbs_pmf} describes the process to sample from $V$, which is exactly the same for $U$. A $U$ and $V$ obtained via PMF are used as inputs.
+
+
+\begin{algorithm}
+\caption{Gibbs Sampling for BPMF}\label{alg:gibbs_pmf}
+\begin{algorithmic}[1]
+\Procedure{GibbsSamplingForV}{$U$,$V$,$R$}
+\For{j=1..M} 
+\State{$row_{in} = $row indices of known samples in column $j$} 
+\State{$\mathcal{M} = U_{index = row_{in}}$} \Comment{Get feature vectors of known rows in column $j$}
+\State{$\mathbf{r} = R_{row_{in},j}$} \Comment{Vector of known values in column $j$}
+\State{$C = (\alpha_V+\beta\cdot\mathcal{M}^T\mathcal{M})^{-1}$} \Comment{Covariance of known feature vectors $U$}
+\State{$\mu_V = C\cdot(\beta\cdot\mathcal{M}^T\mathbf{r}+\alpha_V \mu_V)$} \Comment{Update mean vector}
+\State{$\Lambda = \text{Cholesky}(C)$} \Comment{Cholesky upper triangular decomposition}
+\State{$\mathbf{x} \sim \mathcal{N}(0,1) \in \mathbf{R}^D$} \Comment{Randomly sample $D$ variables from Normal}
+\State{$V_{j}=\Lambda\mathbf{x}+\mu_V$} \Comment{Update $V$}
+\EndFor
+\State \textbf{return} $V$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+
+$\alpha_V$ is the precision hyperparameter for $V$ and it is used to ensure non-singularity of $C$. $\mu_V$ is the average vector. $\beta$ is a parameter used for the Inverse-Wishart distribution, used as the prior of covariance matrix from data assumed to be from a normal distribution. Details are available in the appendix \ref{sec:app_bpmf}. We take $\Lambda$ as the Cholesky decomposition of the covariance $C$. If applied to a vector of uncorrelated samples ($\mathbf{x}$) it produces a vector with covariances of sampled system, which is why we add it to $\mu_V$, creating a feature vector of the samples.  Note that hyperparameters are reinitialised each loop before sampling trials.
+
+
+In simpler terms, we capture the properties of the current distribution of known values in $V_j$ in $C$ and using the Cholesky decomposition update V with samples randomly generated from the captured distribution. Repeating this a few times(for our case, 3) over $U$ and $V$ asymptotically captures the real distribution of the samples. 
+
+From this we get a better estimate of $\mathrm{Var}[\mathbf{u}_i^T \mathbf{v}_j \mid R_\mathcal{O}]$ and select the highest value for sampling.
+\subsection{Performance}
+
+MCMC Maximum Variance search was done on figure \ref{fig:MN-V-varsearch} and \ref{fig:eiffel_max_var_search}. As we see the performance on the synthetic data was better than the Matrix Normal version, being able to always perform better than random sampling. It should be noted that for image discovery, as in \ref{fig:eiffel_max_var_search}, MCMC performed less well than the clustered search (compare to figure \ref{fig:eiffel_clustering_random}) - this was observed over multiple runs. Finally the running speed was found to be quite a lot slower, taking 0.8 seconds on average compared to 0.01 for clustered knowledge search to calculate the criteria for sample selection.
+
+ \begin{figure}[!htbp]
+   \begin{center}
+     \resizebox{\textwidth}{!}{\input{Chapter3/Chapter3Figs/MN-V-varsearch.tikz}}
+   \end{center}
+   PMF with $\lambda = 0.01$ and an initial 1.25\% of samples discovered
+     \caption{MCMC Maximum Variance Search}
+     \label{fig:MN-V-varsearch}
+ \end{figure}
+ 
+\begin{figure}[!htbp]
+  \begin{center}
+    \resizebox{\textwidth}{!}{\input{Chapter3/Chapter3Figs/eiffel_max_var_search.tikz}}
+  \end{center}
+    \caption{MCMC Maximum Variance Search on Eiffel Tower Image}
+    \label{fig:eiffel_max_var_search}
+\end{figure}
+
+
+\section{Lookahead Search}
+
+Lookahead search is the idea of inserting multiple values in a dataset and seeing what effect the new value has on the output model \cite{bayelookahead}. This is a greedy approach as it essentially looks at every single unknown and places all the possible values inside it to see the effect on the model. A value of model quality is taken for all the simulations and from this the sample with the highest quality is requested.
+
+\subsection{Algorithm}
+For this greedy approach we will use output values variance as a measure of sample usefulness. A range of values will be inserted into the unknown index $i,j$ and the prediction of unknown values will be saved. Once all the range of values for $i,j$ have been tested the variance of each individual value other each simulated instance is taken, from this the average of the variance of each value is taken and assigned to index $i,j$ of variance matrix $Var_{R}$. Once each value of $Var_{R}$ is completed the sample with the highest mean variance is selected. This would imply that it is the index most likely to impact the model's output. This is represented in algorithm \ref{alg:lookahead}.
+
+
+\begin{algorithm}
+\caption{Lookahead Calculation}\label{alg:lookahead}
+\begin{algorithmic}[1]
+\Procedure{LookaheadVariance}{$R$,$Z$,$s$} \Comment{$s$ is number of steps}
+\State $s_{inc} = \frac{maxR - minR}{s}$
+\For{i=1..N} 
+\For{j=1..M} 
+\State $\mathfrak{V}$ = zeros(M,N,s) \Comment{$\in \mathcal{R}^{M \times N \times s}$}
+\For{$v = $minR$:s_{inc}:$maxR} \Comment{Range with configurable step}
+\State $\mathfrak{V}_v$ = PMF($R + R_{ij}=v$,$Z+Z_{ij}=1$) \Comment{Train with new value}
+\EndFor
+\State $RVar_{ij}$ = mean($\mathrm{Var}_v(\mathfrak{V})$) \Comment{Average standard deviation across $v$} 
+\EndFor
+\EndFor
+\State \textbf{return} $RVar$
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+Note that the meaning of variance in the lookahead algorithm and the variance search are different. On one hand the variance of section \ref{sec:mnvar} and \ref{sec:mcmcvar} refers to how much the value is expected to change, that is how uncertain we are about it. Here the variance refers to the total possible change over the model -  this is essentially a brute force approach to the $\mathbb{E}_q\left[ \sum\limits_{kl}\mathrm{Var}_q(R_{kl})\right]$ criteria tried by Sutherland et al. in figure \ref{fig:sutherland_alg}. However here we look directly at the impact on the model and Sutherland et al. use the variances of the parameters as a proxy.
+
+\subsection{Performance}
+
+Few papers report on the performance of this greedy approach for good reason - the complexity of creating the selection criteria is $O(M^3N^3Dsi)$ where $s$ is the number of values to try on each sample and $i$ is the number of iterations for the PMF to converge.
+
+For this reason the lookahead method was only done on $10\times 10$ synthetic data where computation was still lengthy but reasonably fast.
+
+It was observed that selecting the sample that can impact the model the most does not mean a better result as it often selected a sample that led to greater overfitting (as observed by the large variation in output values).
+
+\begin{figure}[!htbp]
+  \begin{center}
+    \resizebox{\textwidth}{!}{\input{Chapter3/Chapter3Figs/lookahead_boxplot.tikz}}
+  \end{center}
+  Here us the boxplot of the targeted advantage ratio results from 20 simulations of a randomly generated synthetic matrix each (i.e. a total of 80). Runtime to generate was roughly 2 hours.
+  
+  i represents the number of samples sampled before lookahead matrix is regenerated - lower is better but more time consuming.
+  
+  s represents the number of values tested for each unknown sample - higher is preferred as it reflects variance better but is more time consuming.
+    \caption{Lookahead Performance on $10\times 10$ rank 3 synthetic matrices}
+    \label{fig:lookahead_boxplot}
+\end{figure}
+
+Figure \ref{fig:lookahead_boxplot} shows the performance of the lookahead criteria on $10\times 10$ random rank 3 matrices. As it can be seen a good performance is only obtained when many values are tested (s=40) and the matrix variance update (i=5) is low. This is consistent with the expectations that as more samples are available, we reach the real variance of the model. Trying to "cheat" the high complexity of the model by only updating the variance matrix every other new sample or so did not result in good performance.
+
+
+\section{Combining CKS with MCMC Variance}
+
+In the clustered knowledge search algorithm we only restricted the search space to a range of cells. Other algorithms, such as maximum variance search, targeted specific cells. Search space restriction (CKS) often had good performance time wise but did not fare as well. Single cell selection (such as variance search) often required more computation and fared better when recalculated at each new incoming sample. In the aim to calculate the variance matrix on a less regular basis and retain performance the CKS algorithm was used as a mask to the variance matrix, calculated at a less regular interval.
+
+\subsection{Algorithm}
+Combining CKS with MCMC variance search is relatively easy and is outlined in algorithm \ref{alg:combcks}. The CKS matrix is selected and a variance matrix calculated every few samples is used to select the group of minimum valued indices.
+\begin{algorithm}
+\caption{Combination of CKS and MCMC Variance}\label{alg:combcks}
+\begin{algorithmic}[1]
+\Procedure{CKS\_MCMC\_Var}{$U$,$V$,$Z$} \Comment{$s$ is number of steps}
+\If{$c \%50$ == 0} \Comment{recalculate every 50 samples, configurable}
+\State $\mathcal{V} \gets MCMCVar(U,V)$ \Comment{$\in R^{M \times N}$}
+\EndIf
+\State $c \gets c + 1$
+\State $\mathcal{K} \gets $Clus\_Know\_Search$(U,V,Z)$ \Comment{$\in R^{M \times N}$}
+\State $\mathcal{K}(\mathcal{K}\neq $min$(\mathcal{K})) \gets 0$ \Comment{Set all non minimum values to 0}
+\State $\mathcal{K}(\mathcal{K} = $min$(\mathcal{K})) \gets \mathcal{V}_{\mathcal{K} = \text{min}(\mathcal{K})}$ \Comment{Min values equal to the variance in $\mathcal{V}$}
+\State $x,y = $MaxIndex$(\mathcal{K})$
+\State \textbf{return} $x,y$ \Comment{Return subgroup index of max variance}
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+The performance of this hybrid is evaluated in section \ref{sec:algo_comp}.
+
+\subsection{Improvements}\label{sec:cks_mcmc_imp}
+
+From Figure \ref{fig:combined_compared} we see that this hybrid approach performs well with reasonably good efficiency. Some ways to improve it could deal with the difference in clusters that CKS uses to target samples. For example there may be a very large group of samples all belonging to the same cluster (say cluster A) for which 4 \% is known -  enough to correctly infer various properties.  We have a much smaller group, cluster B, for which 5 \% is known, but as this is a small cluster this is not enough to carry out correct inferences yet this group will not be targeted. Taking the MCMC Variance into account and having a voting algorithm to decide whether to really target the least known about group would be a step forward.
+
+\section{Comparing Algorithms}\label{sec:algo_comp}
+
+\begin{figure}[!htbp]
+  \begin{center}
+    \resizebox{\textwidth}{!}{\input{Chapter3/Chapter3Figs/combined_compared.tikz}}
+  \end{center}
+
+  
+  \begin{tabular}{p{2.2cm}p{5cm}p{2.2cm}p{5cm}}
+  \textbf{MKS:} & Minimum Knowledge Search & \textbf{nrMKS:} & non random MKS \\
+  \textbf{CKS:} & Clustered Knowledge Search & \textbf{MNVar:} & Matrix Normal Variance Search \\
+  \textbf{MCMCVar:} & Markov Chain Monte Carlo Variance Search & \textbf{CKS \& MCMCvar:} & CKS combined with MCMCVar calculated at 50 sample intervals
+  \end{tabular}
+  
+    Box plot for 20 simulations of active sampling with offline PMF.
+  
+  t is the time taken for one run of 500 new sample requests.
+  
+  Values larger than 1 indicate better than random performance.
+  
+  Lookahead sampling was ignored for computational efficiency reasons.
+  
+    \caption{Comparison of multiple runs on $80 \times 50$ synthetic data}
+    \label{fig:combined_compared}
+\end{figure}
+
+Here the performance of all the encountered algorithms so far is evaluated. For fair comparisons it was compared to the average random sampling performance rather than an individual instance(average of random sampling for $80 \times 50$ is found in appendix figure \ref{fig:RandomPMF}). This avoid instances of bad random sampling performance and very good targeted sampling performance creating artificially high values, as in figure \ref{fig:online_pmf_active}.
+
+The first observation to be made is that the proposed MKS algorithm does not perform well, only ensuring close to expected random performance, the non random variation was found to slightly outperform the random variation due to the initial column and row knowledge maximisation (as seen in the knowledge matrix in figure \ref{fig:know_mat_it}).
+
+The CKS search did yield better than random performance nearly consistently, which shows that the targeted approach was successful, though not as well as the more complex MCMCVar one.
+
+Matrix Normal Variance Search (MNVar) did not results in the results found by Sutherland et. al, however this is most likely due to MNVar being sensitive to the parameters used and the parameters found by PMF do not complete empty rows and cells, meaning parameter quality can be very low at the start of the sampling process.
+
+MCMCVar was found to perform best, consistently outdoing random selection, though at the cost of greater complexity. An attempt at reducing complexity while retaining targeting performance is done with the hybrid CKS MCMC algorithm. This resulted in a performance consistently above random sampling and was above to reduce the runtime of 500 sample requests by 27\%. While not very useful for small matrices, as active sampling rarely needs to be done in realtime, this is useful for very large databases such as the Netflix one.
+
+
+Finally the Max-Min value search mentioned in section \ref{sec:as_goals} was tested but had an average targeting advantage of 0.8 and was only found to be useful to remove some over and under estimation errors, as expected.
+% ------------------------------------------------------------------------
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End: 

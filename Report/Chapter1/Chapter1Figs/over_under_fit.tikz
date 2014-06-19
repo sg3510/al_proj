@@ -1,0 +1,129 @@
+% This file was created by matlab2tikz v0.4.7 running on MATLAB 8.1.
+% Copyright (c) 2008--2014, Nico Schlömer <nico.schloemer@gmail.com>
+% All rights reserved.
+% Minimal pgfplots version: 1.3
+% 
+% The latest updates can be retrieved from
+%   http://www.mathworks.com/matlabcentral/fileexchange/22022-matlab2tikz
+% where you can also make suggestions and rate matlab2tikz.
+% 
+\begin{tikzpicture}
+
+\begin{axis}[%
+width=1.91620621980676in,
+height=1.92052083333333in,
+scale only axis,
+xmin=0,
+xmax=10,
+ymin=-4,
+ymax=6,
+name=plot2,
+title={Good Fit, decent RMSE}
+]
+\addplot [color=blue,only marks,mark=x,mark options={solid},forget plot]
+  table[row sep=crcr]{1	1.97374569656748\\
+2	2.88406786873516\\
+3	4.78553661488987\\
+4	4.5675745314657\\
+5	3.94342674696089\\
+6	2.9770548882854\\
+7	1.19483170610871\\
+8	-0.14695915605463\\
+9	-1.21420046517419\\
+10	-2.85419171271952\\
+};
+\addplot [color=red,solid,forget plot]
+  table[row sep=crcr]{1	2.41023287753905\\
+2	3.31851727633452\\
+3	3.83626634177898\\
+4	3.96348007387242\\
+5	3.70015847261484\\
+6	3.04630153800625\\
+7	2.00190927004665\\
+8	0.566981668736026\\
+9	-1.25848126592561\\
+10	-3.47447953393826\\
+};
+\end{axis}
+
+\begin{axis}[%
+width=1.91620621980676in,
+height=1.92052083333333in,
+scale only axis,
+xmin=0,
+xmax=10,
+ymin=-4,
+ymax=6,
+at=(plot2.left of south west),
+anchor=right of south east,
+title={Underfitting, high RMSE}
+]
+\addplot [color=blue,only marks,mark=x,mark options={solid},forget plot]
+  table[row sep=crcr]{1	1.97374569656748\\
+2	2.88406786873516\\
+3	4.78553661488987\\
+4	4.5675745314657\\
+5	3.94342674696089\\
+6	2.9770548882854\\
+7	1.19483170610871\\
+8	-0.14695915605463\\
+9	-1.21420046517419\\
+10	-2.85419171271952\\
+};
+\addplot [color=red,solid,forget plot]
+  table[row sep=crcr]{1	4.75344487764515\\
+2	4.09958794303656\\
+3	3.44573100842797\\
+4	2.79187407381938\\
+5	2.13801713921079\\
+6	1.48416020460219\\
+7	0.830303269993603\\
+8	0.176446335385012\\
+9	-0.47741059922358\\
+10	-1.13126753383217\\
+};
+\end{axis}
+
+\begin{axis}[%
+width=1.91620621980676in,
+height=1.92052083333333in,
+scale only axis,
+xmin=0,
+xmax=10,
+ymin=-4,
+ymax=6,
+at=(plot2.right of south east),
+anchor=left of south west,
+title={Overfitting, very low RMSE},
+legend style={at={(0.737312217300616,0.210441045204993)},anchor=south west,draw=black,fill=white,legend cell align=left}
+]
+\addplot [color=blue,only marks,mark=x,mark options={solid}]
+  table[row sep=crcr]{1	1.97374569656748\\
+2	2.88406786873516\\
+3	4.78553661488987\\
+4	4.5675745314657\\
+5	3.94342674696089\\
+6	2.9770548882854\\
+7	1.19483170610871\\
+8	-0.14695915605463\\
+9	-1.21420046517419\\
+10	-2.85419171271952\\
+};
+\addlegendentry{Data};
+
+\addplot [color=red,solid]
+  table[row sep=crcr]{1	1.97407548210884\\
+2	2.88109979888774\\
+3	4.79740889434664\\
+4	4.53987254606422\\
+5	3.98497972506559\\
+6	2.93550191018698\\
+7	1.22253369151728\\
+8	-0.158831435498733\\
+9	-1.21123239530863\\
+10	-2.85452149827793\\
+};
+\addlegendentry{Fit};
+
+\end{axis}
+\end{tikzpicture}%

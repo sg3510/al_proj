@@ -1,0 +1,163 @@
+\begin{thebibliography}{22}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Genz(2011)]{mcmc-int}
+Alan Genz.
+\newblock Hastings-Metropolis for Integration Problems, 2011.
+\newblock URL \url{http://www.math.wsu.edu/faculty/genz/416/lect/l10-4.pdf}.
+
+\bibitem[GroupLens()]{movielensdata}
+GroupLens.
+\newblock MovieLens 100k Dataset.
+\newblock URL \url{http://grouplens.org/datasets/movielens/}.
+
+\bibitem[Gupta and Nagar(1999)]{gupta1999matrix}
+A.K. Gupta and D.K. Nagar.
+\newblock \emph{Matrix Variate Distributions}.
+\newblock Monographs and Surveys in Pure and Applied Mathematics. Taylor \&
+  Francis, 1999.
+\newblock ISBN 9781584880462.
+\newblock URL \url{http://books.google.co.uk/books?id=PQOYnT7P1loC}.
+
+\bibitem[Isserlis(1918)]{isserlis1918}
+L.~Isserlis.
+\newblock On a Formula for the Product-Moment Coefficient of any Order of a
+  Normal Frequency Distribution in any Number of Variables.
+\newblock \emph{Biometrika}, 12\penalty0 (1/2):\penalty0 134--139, 1918.
+\newblock ISSN 00063444.
+\newblock URL \url{http://www.jstor.org/stable/2331932}.
+
+\bibitem[Kriegel et~al.(2009)Kriegel, Kr\"{o}ger, and Zimek]{highdim-clust}
+Hans-Peter Kriegel, Peer Kr\"{o}ger, and Arthur Zimek.
+\newblock Clustering High-dimensional Data: A Survey on Subspace Clustering,
+  Pattern-based Clustering, and Correlation Clustering.
+\newblock \emph{ACM Trans. Knowl. Discov. Data}, 3\penalty0 (1):\penalty0
+  1:1--1:58, März 2009.
+\newblock ISSN 1556-4681.
+\newblock \doi{10.1145/1497577.1497578}.
+\newblock URL \url{http://doi.acm.org/10.1145/1497577.1497578}.
+
+\bibitem[Law et~al.(2014)Law, Knox, Djoumbou, Jewison, Guo, Liu, Maciejewski,
+  Arndt, Wilson, Neveu, et~al.]{law2014drugbank}
+Vivian Law, Craig Knox, Yannick Djoumbou, Tim Jewison, An~Chi Guo, Yifeng Liu,
+  Adam Maciejewski, David Arndt, Michael Wilson, Vanessa Neveu, et~al.
+\newblock DrugBank 4.0: shedding new light on drug metabolism.
+\newblock \emph{Nucleic acids research}, 42\penalty0 (D1), 2014.
+\newblock URL \url{http://www.drugbank.ca}.
+
+\bibitem[Lin(2007)]{nnmf-grad}
+Chih-Jen Lin.
+\newblock Projected Gradient Methods for Nonnegative Matrix Factorization.
+\newblock In \emph{Neural Computation}, Seiten 2756--2779, 2007.
+\newblock URL \url{http://dx.doi.org/10.1162/neco.2007.19.10.2756}.
+
+\bibitem[Ling et~al.(2012)Ling, Yang, King, and Lyu]{onlinepmf}
+Guang Ling, Haiqin Yang, I.~King, and M.R. Lyu.
+\newblock Online learning for collaborative filtering.
+\newblock In \emph{Neural Networks (IJCNN), The 2012 International Joint
+  Conference on}, Seiten 1--8, June 2012.
+\newblock \doi{10.1109/IJCNN.2012.6252670}.
+\newblock URL \url{http://dx.doi.org/10.1109/IJCNN.2012.6252670}.
+
+\bibitem[MatlabCookbook(2013)]{kmean-sil}
+MatlabCookbook.
+\newblock K-Means Validating cluster identity, 2013.
+\newblock URL
+  \url{http://www.matlab-cookbook.com/recipes/0100_Statistics/150_kmeans_clustering.html}.
+
+\bibitem[Ricci et~al.(2011)Ricci, Rokach, Shapira, and Kantor]{recsyshand}
+Francesco Ricci, Lior Rokach, Bracha Shapira, and Paul Kantor.
+\newblock \emph{{Introduction to Recommender Systems Handbook}}.
+\newblock 2011.
+\newblock ISBN 9780387858203.
+\newblock \doi{10.1007/978-0-387-85820-3\_1}.
+\newblock URL \url{http://dx.doi.org/10.1007/978-0-387-85820-3\_1}.
+
+\bibitem[Salakhutdinov and Mnih(2007)]{pmf}
+Ruslan Salakhutdinov and Andriy Mnih.
+\newblock Probabilistic Matrix Factorization, 2007.
+\newblock URL
+  \url{http://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.127.6198}.
+
+\bibitem[Salakhutdinov and Mnih(2008)]{SalMnih2008}
+Ruslan Salakhutdinov and Andriy Mnih.
+\newblock Bayesian Probabilistic Matrix Factorization using {M}arkov chain
+  {M}onte {C}arlo.
+\newblock In \emph{Proceedings of the 25th International Conference on Machine
+  Learning}, Seiten 880--887, 2008.
+\newblock URL \url{http://dx.doi.org/10.1145/1390156.1390267}.
+
+\bibitem[Shan and Banerjee(2010)]{shan2010generalized}
+Hanhuai Shan and Arindam Banerjee.
+\newblock Generalized probabilistic matrix factorizations for collaborative
+  filtering.
+\newblock In \emph{Data Mining (ICDM), 2010 IEEE 10th International Conference
+  on}, Seiten 1025--1030. IEEE, 2010.
+\newblock URL \url{www-users.cs.umn.edu/~shan/icdm10_gpmf.pdf}.
+
+\bibitem[Silva and Carin(2012)]{silva}
+Jorge Silva and Lawrence Carin.
+\newblock Active learning for online bayesian matrix factorization.
+\newblock In \emph{Proceedings of the 18th ACM SIGKDD international conference
+  on Knowledge discovery and data mining}, Seiten 325--333, 2012.
+\newblock URL \url{http://doi.acm.org/10.1145/2339530.2339584}.
+
+\bibitem[Sutherland et~al.(2013{\natexlab{a}})Sutherland, Poczos, and
+  Schneider]{active-mf}
+Dougal~J. Sutherland, Barnabas Poczos, and Jeff Schneider.
+\newblock Active Learning and Search on Low-Rank Matrices.
+\newblock In \emph{ACM SIGKDD}, 2013{\natexlab{a}}.
+\newblock URL
+  \url{http://www.autonlab.org/autonweb/21710/version/2/part/5/data/kdd-13.pdf}.
+
+\bibitem[Sutherland et~al.(2013{\natexlab{b}})Sutherland, Poczos, and
+  Schneider]{active-mf-slides}
+Dougal~J. Sutherland, Barnabas Poczos, and Jeff Schneider.
+\newblock Active Learning and Search on Low-Rank Matrices Slides - Variational
+  PMF, 2013{\natexlab{b}}.
+\newblock URL
+  \url{http://www.cs.cmu.edu/~dsutherl/active-pmf/kdd-13-slides.pdf}.
+
+\bibitem[Toledo et~al.(2013)Toledo, Lopez, and Mota]{toledo13}
+Raciel~Yera Toledo, Luis~Martinez Lopez, and Yail{\'e}~Caballero Mota.
+\newblock Managing natural noise in collaborative recommender systems.
+\newblock In \emph{IFSA/NAFIPS}, Seiten 872--877, 2013.
+\newblock URL \url{http://dx.doi.org/10.1109/IFSA-NAFIPS.2013.6608515}.
+
+\bibitem[(USA)()]{hivadata}
+The National Cancer~Institute (USA).
+\newblock HIVA dataset for ETHZ Active Learning Challenge.
+\newblock URL \url{http://dtp.nci.nih.gov/docs/aids/aids_data.html}.
+
+\bibitem[Wang et~al.(2013)Wang, Garnett, and Schneider]{bayelookahead}
+Xuezhi Wang, Roman Garnett, and Jeff Schneider.
+\newblock Bayesian Active Search on Graphs.
+\newblock In \emph{Proceedings of the 19th ACM SIGKDD International Conference
+  on Knowledge Discovery and Data Mining}, KDD '13, Seiten 731--738, New York,
+  NY, USA, 2013. ACM.
+\newblock ISBN 978-1-4503-2174-7.
+\newblock \doi{10.1145/2487575.2487605}.
+\newblock URL \url{http://doi.acm.org/10.1145/2487575.2487605}.
+
+\bibitem[Wang and Bovik(2009)]{Wang09meansquared}
+Zhou Wang and Alan~C. Bovik.
+\newblock Mean Squared Error: Love it or leave it?
+\newblock \emph{IEEE SIGNAL PROCESSING MAGAZINE}, Seiten 98--117, 2009.
+\newblock URL \url{http://dx.doi.org/10.1109/MSP.2008.930649}.
+
+\bibitem[Zhou et~al.(2012)Zhou, Shan, Banerjee, and Sapiro]{kpmf}
+Tinghui Zhou, Hanhuai Shan, Arindam Banerjee, and Guillermo Sapiro.
+\newblock Kernelized Probabilistic Matrix Factorization, 2012.
+\newblock URL \url{http://dx.doi.org/10.1137/1.9781611972825.35}.
+
+\bibitem[Zurich(2010)]{al-chall}
+ETH Zurich.
+\newblock Active Learning Challenge, 2010.
+\newblock URL
+  \url{http://www.causality.inf.ethz.ch/activelearning.php?page=datasets}.
+
+\end{thebibliography}

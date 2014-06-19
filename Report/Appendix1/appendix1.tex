@@ -1,0 +1,73 @@
+\chapter{Appendix A}
+\markboth{\MakeUppercase{\thechapter. Appendix}}{\thechapter. Appendix}
+\section{Probabilistic Matrix Factorization}
+\subsection{Details of derivation}
+%Full work
+In equation \ref{eq:pmf_ml_log} we had a partial expression of log maximum likelihood the full equation is:
+\begin{align*}
+\ln (P(U,V|R,\sigma,\sigma_U^2\mathbf{I},\sigma_V^2\mathbf{I})) &= - \frac{1}{2 \sigma^2} \sum_{i=1}^{N} \sum_{j=1}^{M} Z_{ij}(R_{ij}-U_i^TV_j)^2 - \frac{1}{2\sigma_U^2} \sum_{i=1}^{N} \|U_i\|_{Fro}^2 
+  - \frac{1}{2\sigma_V^2} \sum_{j=1}^{M} \|V_j\|_{Fro}^2 
+\\& -\frac{1}{2}\left( \left( \sum_{i=1}^{N} \sum_{j=1}^{M} Z_{ij} \ln(\sigma^2)\right)+ ND\ln(\sigma^2) + MD \ln(\sigma^2)\right) + C 
+\end{align*}
+Thus the remaining is still dependant on the parameters but independant of $U$ and $V$.
+
+The Frobenius Norm is defined as:
+\begin{equation}
+\|A\|_{Fro}=\sqrt{\sum_{i=1}^m\sum_{j=1}^n |a_{ij}|^2}=\sqrt{\operatorname{trace}(A^{{}^*}A)}
+\end{equation}
+
+Finally for practicality we symmetrise $\lambda_U$ and $\lambda_V$ from equation \ref{eq:pmf_err_func} to be a single regularisation parameter $\lambda$.
+
+%combining regularising params
+\subsection{$\lambda$ as a Lagrange multiplier}
+\label{sec:lag_lambd_optim}
+%lambda param if optimised will tend to 0
+%prove and say that neeeded as if 0 then constraint removed
+In the situation that we want to optimise a function $f(x)$ with a constraint $g(x)=c$ we have:
+\begin{align*}
+\text{maximize} \qquad & f(x) \\
+\text{s.t.} \qquad & g(x)=c \\
+\Lambda(x,\lambda) &= f(x) + \lambda \cdot \left(g(x)-c\right)
+\end{align*}
+It is easy to see how the $\lambda$ from equation \ref{eq:pmf_err_func} also corresponds to a Lagrange parameter. Indeed we have $\sum_{i=1}^{N} \sum_{j=1}^{M} Z_{ij}(R_{ij}-U_i^TV_j)^2$ as $f(x)$ and $\sum_{i=1}^{N} \|U_i\|_{Fro}^2 +  \sum_{j=1}^{M} \|V_j\|_{Fro}^2$ as $g(x)$ with $c=0$. Thus essentially we are restricting $U$ and $V$ to be close to zero - essential if we are to avoid overfitting. This is why we do not want $\lambda = 0$ as it would remove this constraint. In fact using the Widrow-Hoff learning rule to update $\lambda$ iteratively would cause it to tend to zero and remove the constraint, explaining why this parameter cannot be optimised like $U$ and $V$.
+
+\section{Bayesian Probabilistic Matrix Factorization}
+\label{sec:app_bpmf}
+
+The parameters of BPMF are placed upon a Gaussian-Wishart distribution  with the parameter $W_0$:
+\begin{equation*}
+\mathcal{W}(\Lambda| W_0,\nu_0) = \frac{1}{C} |\Lambda|^{(\nu_0-D-1)/2} \exp \left(-\frac{1}{2}\text{Tr}(W_0^{-1}\Lambda)\right)
+\end{equation*}
+$C$ is a normalising constant.
+
+Details on the Gibbs sampling process are found in section \ref{sec:mcmcvar}.
+
+The exact details and sample code can be found on \url{http://www.cs.toronto.edu/~rsalakhu/BPMF.html} and the published paper.
+
+\section{Synthetic Data Generation}
+
+Synthetic Data was generated to replicate a movie database, with a few users types and the other users being some variation of their group. For example there would be the base "$16$ year old boy" profile as well as the "young adult" profile. From this random users with a varying mix (for example 80\% $16$ year old and 20\% young adult) between the base profiles are made.
+
+The code used is the following:
+ \lstinputlisting[label=synthdata,caption=Code to generate synthetic Data]{Code/create_synthetic_data.m}
+\section{Clustering}
+Clustering is used in the CKS algorithm, section \ref{sec:cks}.
+
+For this the K-Means algorithm was used due to its simplicity.  However other more complex algorithms could have been used - though this was not the focus of research on this report.
+\subsection{K-Means}
+The K-Means algorithm works given a set $\mathbf{X} = [ \mathbf{x}_1 \dots \mathbf{x}_n]$ that we want to cluster around $k$ clusters\footnote{$k<n$}. For this we minimise the cost function:
+
+\begin{equation*}
+\underset{\mathbf{S}} {\operatorname{arg\,min}}  \sum_{i=1}^{k} \sum_{\mathbf x_j \in S_i} \left\| \mathbf x_j - \boldsymbol\mu_i \right\|^2 
+\end{equation*}
+
+With $\mu_i$ being the mean vector belonging to the $i$th cluster.
+
+The optimum is typically found by iterative refinement in a similar way to mean squares estimation.
+%Full work
+% ------------------------------------------------------------------------
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End: 

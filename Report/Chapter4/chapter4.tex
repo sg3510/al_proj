@@ -1,0 +1,147 @@
+\chapter{Evaluation and Observations}
+\ifpdf
+    \graphicspath{{Chapter4/Chapter4Figs/PNG/}{Chapter4/Chapter4Figs/PDF/}{Chapter4/Chapter4Figs/}}
+\else
+    \graphicspath{{Chapter4/Chapter4Figs/EPS/}{Chapter4/Chapter4Figs/}}
+\fi
+
+\markboth{\MakeUppercase{\thechapter. Evaluation and Observations}}{\thechapter. Evaluation and Observations}
+\section{Test on Larger Datasets}
+The final test was to try active sampling on larger and different datasets. For this the movielens dataset \cite{movielensdata}, Drugbank \cite{law2014drugbank} and HIVA \cite{hivadata} were used.
+\subsection{Pre-Processing}
+Most of the time the datasets came in various formats that had to be cleaned up and converted to matlab format. Additionally the movielens dataset had many incomplete entries (unrated movies). This meant creating a subset as non-sparse as possible to split up into useful test, validation and training sets. For the other datasets the data was split into respective training,test and validation sets, with an initial training set of about 2.5 \%.
+
+
+\subsection{Dealing with large sizes}
+
+The main challenge with using large datasets is the time taken, especially due to scaling up with the complexity of datasets. For this reason data was often reduced to manageable datasets and process in batches for training. This is advantageous when algorithms are bounded by $O(MN)$, $O(M^2N^2)$ and higher as halving data results in $O(\left(\frac{M}{2}\right)^2 \left(\frac{N}{2}\right)^2)+ O(\left(\frac{M}{2}\right)^2 \left(\frac{N}{2}\right)^2) = \frac{1}{8}O(M^2 N^2)$, which results in an improvement of nearly a factor of 10 for splitting it into two equal sets. For more datasets and high complexities this is even more interesting. The main disadvantage is that by reducing the data available to PMF and other algorithms in one batch that the model quality can be reduced. For this reason it was ensured that each batch have roughly $5000$ entries or more. This is a variant of the batch splitting that appears in the code published by Ruslan Salakhutdinov\cite{SalMnih2008} \footnote{\url{http://www.cs.toronto.edu/~rsalakhu/BPMF.html}}.
+\subsection{Results}
+
+\begin{figure}[!htbp]
+  \begin{center}
+    \resizebox{\textwidth}{!}{\input{Chapter4/Chapter4Figs/movielens_full_mks.tikz}}
+  	\textbf{MKS}
+  \end{center}
+  
+  \begin{center}
+    \resizebox{\textwidth}{!}{\input{Chapter4/Chapter4Figs/movielens_full_mcmcvar.tikz}}
+    \textbf{MCMCVar}
+  \end{center}
+  
+  
+   Each iteration represents adding a batch of 50 samples based on the selection criteria.
+  
+  The predictor used was PMF with $20$ features, $\lambda = 0.01$ and $\mu = 0.005$.
+  
+  The Active and Random request matrix may be better seen in colour.
+    
+    \caption{MovieLens Dataset Active Sampling Test on $443\times 515$ subgroup batch}
+    \label{fig:movielens_full_mcmcvar}
+\end{figure}
+
+
+\begin{table}[H]
+  \begin{center}
+\begin{tabular}{l|l|l|l|}
+&	\textbf{CKS}	& \textbf{MCMCVar} & \textbf{CKS MCMCVar Comb} \\ \hline
+Targeting Advantage	& 1.036 &	1.094 &	1.073 \\ \hline
+Time (hours) &	1.677 &	2.083	&1.833 \\ \hline
+Time/sample (s)	& 2	& 2.5 &	2.2 \\ \hline
+\end{tabular}
+\end{center}
+\caption{Active Sampling Results on MovieLens Dataset}
+\label{table:movielens_res}
+\end{table}
+
+
+Figure \ref{fig:movielens_full_mcmcvar} and table \ref{table:movielens_res} show the sampling performance on the MovieLens database. This database is very similar in nature to the synthetic one, having discrete values ranging from 1 to 5. However as MovieLens is a "real" database the values are more concentrated around 3, due to users often being and rating a film 3 stars. This explains the better RMSE performance on a set of similar values. The prediction matrices visually show the average rating being closer to 3 (yellow and green representing 3 and 4). Due to time only one run was done for each algorithm and dataset. The performance of the CKS MCMCVar is, as expected, in between CKS and MCMVar in targeting advantage but its runtime is slightly better than the MCMCVar.
+
+\begin{figure}[!htbp]
+  \begin{center}
+    \resizebox{\textwidth}{!}{\input{Chapter4/Chapter4Figs/drugbank_mks.tikz}}
+  	\textbf{MKS}
+  \end{center}
+  
+  \begin{center}
+    \resizebox{\textwidth}{!}{\input{Chapter4/Chapter4Figs/drugbank_mcmcvar.tikz}}
+    \textbf{MCMCVar} with PPMF \cite{shan2010generalized}
+  \end{center}
+  Drugbank $94 \times 425$ subgroup.
+  
+   Each iteration represents adding a batch of 75 samples based on the selection criteria.
+  
+  The predictor used was PMF with $15$ features, $\lambda = 0.01$ and $\mu = 0.005$ for CKS.
+  
+   The predictor for MCMCVar and MCMCVAr/CKS was PPMF with $15$ features.
+      
+    \caption{Drugbank Dataset Active Sampling}
+    \label{fig:drugbank}
+\end{figure}
+\nomenclature{PPMF}{Parametric PMF -  PMF and BPMF hybrid, uses variational inference for its learning process}
+
+\begin{table}[H]
+  \begin{center}
+\begin{tabular}{l|l|l|l|}
+&	\textbf{CKS}	& \textbf{MCMCVar} & \textbf{CKS MCMCVar Comb} \\ \hline
+Targeting Advantage	& 1.087 &	1.046 &	1.064 \\ \hline
+Time (hours) &	2.64 &	3.4	& 3.05 \\ \hline
+Time/sample (s)	& 2	& 2.45 &	2.2 \\ \hline
+\end{tabular}
+\end{center}
+Note that the number of samples in one iteration is different for the Drugbank Trial than the MovieLens one, explaining different runtimes.
+\caption{Active Sampling Results on Drugbank Dataset}
+\label{table:drugbank_res}
+\end{table}
+
+Figure \ref{fig:drugbank} and table \ref{table:drugbank_res} show the results of active sampling on the Drugbank dataset. The results are interesting because both active and random sampling algorithms spent some time randomly sampling values (due to having no information at all about the data) and once enough positive (red in the figure) values were found this data was used to successfully target other informative cells, leading to active sampling nearly always out-beating random sampling. On the downside the quality of the output for both random and active sampling was not very satisfactory. This is why the PPMF matrix completion variant was tested, though not found as useful as hoped.
+
+\begin{figure}[!htbp]
+  \begin{center}
+    \resizebox{\textwidth}{!}{\input{Chapter4/Chapter4Figs/hiva_mcmcmvar.tikz}}
+  \end{center}
+  HIVA $200 \times 1617$ subgroup.
+  
+   Each iteration represents adding a batch of 100 samples based on the selection criteria.
+   
+   Run too 4 hours and 30 minutes.
+  
+   The predictor was with $15$ features.
+      
+    \caption{HIVA Dataset Active Sampling: MCMC Variance Search}
+    \label{fig:hiva_mcmcmvar}
+\end{figure}
+Figure \ref{fig:hiva_mcmcmvar} contains the result of MCMC Variance Search on the HIVA dataset, a binary biological dataset like Drugank. Here MCMCVar performed well instantly recovered the global picture faster than random selection.
+
+\subsection{General Observations}
+
+Often some algorithms would perform near random sampling performance on synthetic datasets such as CKS. However when using "real", larger scale, data the sampling performance was nearly always superior to random - potentially due to there being a higher likelihood of not being any useful data to sample and a guided approach scales better.
+
+\section{Notes on General Active Sampling Performance}
+\subsection{Future Work and Improvements}
+The field of active sampling often explore various aims with the aim of improving to improve a model performance, such as minimising the variance in latent space to maximising local knowledge. At the beginning of the run the maximum model variance methods (lookahead) were found to perform better due to improving the certainty of unknown latent features but often lost their advantage later on in the sampling process as these features became more certain (this partly explains the large variance of the lookahead search). An individual element variance search was then found to perform better. Like the winner of the Netflix prize, a good active sampling algorithm would be a mixture of different kinds. This is partly what the CKS and MCMCVar hybrid did,by combining an algorithm that seeks to find more about badly classified items and MCMCVar which targets by uncertainty , though the aim was to try and retain MCMCVar performance and improving runtime. 
+
+Thus the ideal one so far would start by an algorithm that first targets less known groups to be able to get good features and then perform a minimum/maximum search to avoid over and underestimation errors. Finally it would request all other samples on an uncertainty basis. A quick implementation of CKS followed by min-max search finishing by MCMCVar was tested on toy synthetic matrices but did not yield good performance. The main issues were around focusing on when was best to switch and how much to compromise on a period of worse RMSE to collect more information (CKS sometimes got beaten by random sampling but greatly helped later on in MCMCVar search).
+
+Given more time a method based on the RMSE gradient would have been tested.
+
+
+On a more general basis active sampling methods taking advantage of different matrix factorisation methods would be interesting. For example some systems derived specifically for movie recommendation take extra data, such as movie year release to take into account the decay of ratings over time. Others such as MMMF act more like Support Vector Machines \cite{active-mf} and inherently have active sampling relevant information such as uncertainty included in the model. 
+
+
+\subsection{Real-World Application Consideration}
+Active Sampling often gives a row and a column coordinate to target. However sometimes, for example on Amazon, we may want to only find about the best product to ask a user (i.e we are restricted to a single row). Using the criteria given by active sampling locally (i.e. choosing the local row optimum active search criteria) may result in an improvement of the model overall rather than the specific user (i.e. it may be better at helping determine the average product rating rather than specific ratings the user gets). Thus a focus on algorithms able to find the best item to enquire about to maximise user knowledge may be better short term if we aim to serve better a loyal customer.
+
+
+\section{Observations on RMSE}
+Throughout this project the main measure of performance was RMSE. This was used as the main objective numerical measure but often during simulations visual feedback was also used - as put in evidence by the included figures. It was also often found that a good RMSE is easily achievable simply by guessing the average value. For example the RMSE of  KPMF in figure \ref{fig:5pcmat} was nearly 50\% better than the one for PMF and still better than the one for BPMF. Yet for the guessed values, PMF and BPMF look closer to reality and in fact BPMF seems to better capture the distribution of values. Another example is in figure \ref{fig:eiffel_tower} where we have two examples of PMF done to restore a picture. The higher regularisation parameter was found to "smooth" out the picture, but with a similar effect to JPEG compression corruption. Despite this it achieved a very similar RMSE to the lower regularisation parameter. In fact other matrix factorisation variants tested during initial search stage, such as KPMF and PPMF\cite{shan2010generalized}, did achieve better RMSEs than PMF but were not chosen simply because they were found to only be good for certain situations (PPMF fared better for binary data) and often were just better than PMF at "guessing average".
+
+In essence using RMSE does not encourage risk taking in guessing as the penalty is high and instead it favours the average. This problem was found throughout the project and meant that some active sampling techniques which sometimes gave a better visual output (such as MKS) had a worse RMSE due to "taking risks" in guessing some values that lie on the boundaries of the distribution of the data. This is a major problem as it is the outliers or edge case values that are of most interest to us as they are the rarest and often the most valuable. For example in drug interaction prediction, guessing that most drugs have a neutral reaction is a very good start, however the real game changer is guessing when a bad or very good interaction will occur, which is not possible when attempting to guess these outliers is penalised. 
+
+This is not a newly discovered problem\cite{Wang09meansquared} and is not easily solved by changing error calculation. Thus  visual feedback is always preferred when available.
+% ------------------------------------------------------------------------
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End: 

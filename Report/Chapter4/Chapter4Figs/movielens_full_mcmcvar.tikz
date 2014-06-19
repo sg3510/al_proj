@@ -1,0 +1,243 @@
+% This file was created by matlab2tikz v0.4.7 running on MATLAB 8.1.
+% Copyright (c) 2008--2014, Nico Schlömer <nico.schloemer@gmail.com>
+% All rights reserved.
+% Minimal pgfplots version: 1.3
+% 
+% The latest updates can be retrieved from
+%   http://www.mathworks.com/matlabcentral/fileexchange/22022-matlab2tikz
+% where you can also make suggestions and rate matlab2tikz.
+% 
+\begin{tikzpicture}
+
+\begin{axis}[%
+width=2in,
+height=2in,
+axis on top,
+scale only axis,
+xmin=0.5,
+xmax=515.5,
+y dir=reverse,
+ymin=0.5,
+ymax=443.5,
+name=plot2,
+title={Random Request}
+]
+\addplot [forget plot] graphics [xmin=0.5,xmax=515.5,ymin=0.5,ymax=443.5] {movielens_full_mcmcvar-1.png};
+\end{axis}
+
+\begin{axis}[%
+width=2in,
+height=2in,
+scale only axis,
+xmin=0,
+xmax=60,
+ymin=0.5,
+ymax=1,
+ylabel={RMSE},
+name=plot1,
+at=(plot2.left of south west),
+anchor=right of south east,
+title={Target Advantage:1.094},
+legend style={at={(0.137108164753053,0.598145377590488)},anchor=south west,draw=black,fill=white,legend cell align=left}
+]
+\addplot [color=blue,solid]
+  table[row sep=crcr]{1	0.984852598373419\\
+2	0.98691197114624\\
+3	0.991102916409731\\
+4	0.989101045253396\\
+5	0.990274605940381\\
+6	0.989587056411546\\
+7	0.989682882893472\\
+8	0.990838413768203\\
+9	0.989713262684312\\
+10	0.989113014658497\\
+11	0.988784512058675\\
+12	0.988516194961599\\
+13	0.987287554463471\\
+14	0.986337870690433\\
+15	0.985603461818197\\
+16	0.985586116422425\\
+17	0.985127139707444\\
+18	0.98458225014603\\
+19	0.984066671341418\\
+20	0.984049302438737\\
+21	0.984253082695877\\
+22	0.984209042402069\\
+23	0.984499487432097\\
+24	0.984431761218986\\
+25	0.984418318245746\\
+26	0.984420095564841\\
+27	0.983962998861527\\
+28	0.983621799088022\\
+29	0.982765879514971\\
+30	0.982733719064244\\
+31	0.984167522109069\\
+32	0.983741593983587\\
+33	0.974887369453717\\
+34	0.975466388653259\\
+35	0.976177289831995\\
+36	0.97672895276212\\
+37	0.977140763032278\\
+38	0.977496188147104\\
+39	0.976908479938175\\
+40	0.977358043875656\\
+41	0.976977285457701\\
+42	0.976372694481213\\
+43	0.97659170605498\\
+44	0.975696574578324\\
+45	0.973777926273301\\
+46	0.964773433765611\\
+47	0.964600538710833\\
+48	0.961304280477245\\
+49	0.960795227647529\\
+50	0.9609653553643494\\
+51	0.9509037568851852\\
+52	0.9508308171499821\\
+53	0.9508955748504522\\
+54	0.9505497720121432\\
+55	0.94030272969043\\
+56	0.947518677263209\\
+57	0.942474651608353\\
+58	0.93956529877619\\
+59	0.934668518407651\\
+60	0.928990531399978\\
+};
+\addlegendentry{Random};
+
+\addplot [color=black!50!green,solid]
+  table[row sep=crcr]{1	0.988165263625116\\
+2	0.97072080088941\\
+3	0.967925457816392\\
+4	0.966185861064171\\
+5	0.965911128878419\\
+6	0.965970342420003\\
+7	0.964358662199566\\
+8	0.962814178844116\\
+9	0.960431756057359\\
+10	0.958033325707069\\
+11	0.955062802073348\\
+12	0.952068151961177\\
+13	0.949416421294012\\
+14	0.946080864196191\\
+15	0.943059425083887\\
+16	0.939767154794794\\
+17	0.936981834582013\\
+18	0.934574522932126\\
+19	0.932062174718115\\
+20	0.929989181248392\\
+21	0.928022225056826\\
+22	0.925425721658326\\
+23	0.922515471521346\\
+24	0.919426734120754\\
+25	0.916445283037594\\
+26	0.913549071853868\\
+27	0.910767015392709\\
+28	0.907644469299417\\
+29	0.90471704042181\\
+30	0.901824334452771\\
+31	0.898877513488215\\
+32	0.896404744967885\\
+33	0.893838322761032\\
+34	0.890722664282112\\
+35	0.887443116440602\\
+36	0.884700355396298\\
+37	0.881689799019854\\
+38	0.879313992714304\\
+39	0.877594887703434\\
+40	0.87565701075817\\
+41	0.874756825275093\\
+42	0.873865170823171\\
+43	0.872829685081365\\
+44	0.872908392754685\\
+45	0.871104854494587\\
+46	0.869485529662145\\
+47	0.86532648067117\\
+48	0.856438552267593\\
+49	0.852866011449603\\
+50	0.85049353314237\\
+51	0.847972308837873\\
+52	0.845603315546848\\
+53	0.842987801014843\\
+54	0.840631326715836\\
+55	0.837045880920788\\
+56	0.836129812560303\\
+57	0.835775064772113\\
+58	0.831313544523637\\
+59	0.819074491394663\\
+60	0.81568314654427\\
+};
+\addlegendentry{Targeted};
+
+\end{axis}
+
+\begin{axis}[%
+width=2in,
+height=2in,
+axis on top,
+scale only axis,
+xmin=0.5,
+xmax=515.5,
+y dir=reverse,
+ymin=0.5,
+ymax=443.5,
+name=plot4,
+at=(plot1.below south west),
+anchor=above north west,
+title={Original (Incomplete)}
+]
+\addplot [forget plot] graphics [xmin=0.5,xmax=515.5,ymin=0.5,ymax=443.5] {movielens_full_mcmcvar-2.png};
+\end{axis}
+
+\begin{axis}[%
+width=2in,
+height=2in,
+axis on top,
+scale only axis,
+xmin=0.5,
+xmax=515.5,
+y dir=reverse,
+ymin=0.5,
+ymax=443.5,
+name=plot5,
+at=(plot4.right of south east),
+anchor=left of south west,
+title={Active Request}
+]
+\addplot [forget plot] graphics [xmin=0.5,xmax=515.5,ymin=0.5,ymax=443.5] {movielens_full_mcmcvar-3.png};
+\end{axis}
+
+\begin{axis}[%
+width=2in,
+height=2in,
+axis on top,
+scale only axis,
+xmin=0.5,
+xmax=515.5,
+y dir=reverse,
+ymin=0.5,
+ymax=443.5,
+name=plot6,
+at=(plot5.right of south east),
+anchor=left of south west,
+title={Targeted Prediction}
+]
+\addplot [forget plot] graphics [xmin=0.5,xmax=515.5,ymin=0.5,ymax=443.5] {movielens_full_mcmcvar-4.png};
+\end{axis}
+
+\begin{axis}[%
+width=2in,
+height=2in,
+axis on top,
+scale only axis,
+xmin=0.5,
+xmax=515.5,
+y dir=reverse,
+ymin=0.5,
+ymax=443.5,
+at=(plot6.above north west),
+anchor=below south west,
+title={Random Prediction}
+]
+\addplot [forget plot] graphics [xmin=0.5,xmax=515.5,ymin=0.5,ymax=443.5] {movielens_full_mcmcvar-5.png};
+\end{axis}
+\end{tikzpicture}%

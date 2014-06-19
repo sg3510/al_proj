@@ -1,0 +1,99 @@
+%%% Thesis Introduction --------------------------------------------------
+\chapter{Introduction}
+\ifpdf
+    \graphicspath{{Introduction/IntroductionFigs/PNG/}{Introduction/IntroductionFigs/PDF/}{Introduction/IntroductionFigs/}}
+\else
+    \graphicspath{{Introduction/IntroductionFigs/EPS/}{Introduction/IntroductionFigs/}}
+\fi
+\markright{\thechapter. Introduction}
+\section{Outline}
+The aim of this project is to develop an active learning system for recommender systems. Recommender systems are a collection of techniques that are able to find resemblances in certain types of datasets and infer missing information, thus providing \emph{recommendations} as to what the missing items may be. If a column is a song and a row a user we would have a music recommendation system. Applications range from user movie ratings prediction to aiding the discovery of drug-target interactions.
+
+%predicting sport outcomes
+
+
+%Development of recommender systems is a multi-disciplinary effort which involves experts from various fields such as Artificial intelligence, Human Computer Interaction, Information Technology, Data Mining, Statistics, Adaptive User Interfaces, Decision Support Systems,Marketing, or Consumer Behavior. Recommender Systems Handbook: A Complete Guide for Research Scientists and Practitioners aims to impose a degree of order upon this diversity by presenting a coherent and unified repository of recommender systems’ major concepts, theories, methodologies, trends, challenges and applications. This is the first comprehensive book which is dedicated entirely to the field of recommender systems and covers several aspects of the major techniques. Its informative, factual pages will provide researchers, stu dents and practitioners in industry with a comprehensive, yet concise and convenient reference source to recommender systems. The book describes in detail the classical methods, as well as extensions and novel approaches that were recently introduced. The book consists of five parts: techniques, applications and evaluation of recommender systems, interacting with recommender systems, recommender systems and communities, and advanced algorithms. The first part presents the most popular and fundamental techniques used nowadays for building recommender systems, such as collaborative filtering, content-based filtering, data mining methods and context-aware methods. The second part starts by surveying techniques and approaches that have been used to evaluate the quality of the recommendations. Then deals with the practical aspects of designing recommender systems, it describes design and implementation consideration, setting guidelines for the selection of the
+
+
+
+Recommender systems work by having a matrix with each row representing a user (or another type of object) and each column a product or item related to the user. The value of a user-item combination is a numerical value indicating the user's score of the item. Not knowing most values results in a sparse matrix with many empty entries, all representing unscored row-column combinations. A recommender system thus aims to infer the score of missing entries from other existing ones. This means that we can try to predict the empty entries and fill in the empty values, thus leading us to complete the matrix and end up with what we estimate the full dataset to look like.
+
+Research in recommender systems is mainly done in Machine Learning, Data Mining and Statistics, though it is also of interest in other fields, such as marketing. Research can either be focused on novel types of recommender systems, ways to improve the accuracy and precision of current systems or ways in which to improve the performance. 
+
+Active learning is generally agnostic to the technique used to complete the matrix and instead seeks to build upon these systems, considering them to be a black box. What active learning seeks to do is to tell the system what currently unknown entries in the matrix would be useful in having. For example in the context of a drug-drug interaction database the process of acquiring a new datapoint is expensive and time consuming due to having to carry out new trials. Thus we would want the system to tell us what drug-drug combination experiment would help us improve our predictions the best. 
+
+Also in databases such as the movielens one\footnote{\url{http://grouplens.org/datasets/movielens/}}, complications arise in relation to memory and speed due to their large size. Movielens has 10 million ratings (and this database is just a subset of movielens' full one), other datasets can be in the order of billions as a Netflix user has rated 200 movies on average and has more than 30 million users making an expected 6 billion ratings. Thus going iteratively through each user to look for other similar users is inefficient if not impossible. To efficiently deal with this problem, the most informative users and items could be selected to form a smaller but equally useful subset. From this, recommendations could still be made but much faster. 
+\section{Project Specification}
+%%The project specification should state clearly what the project is intended to deliver, including all hardware, software, simulation, and analytical work, and provide some motivation.
+\begin{figure*}[ht!]
+\caption{A diagram of the steps for a typical recommender system with the various methods of achieving each step.}
+\label{fig:RecSysDiagram}
+\begin{tikzpicture}
+\tikzstyle{vecArrow} = [thick, decoration={markings,mark=at position
+   1 with {\arrow[semithick]{open triangle 60}}},
+   double distance=1.4pt, shorten >= 5pt,
+   preaction = {decorate},
+   postaction = {draw,line width=1.4pt, white,shorten >= 4.5pt}]
+\node[draw, text width=2cm, text height=0.2cm, align=center] at (1,0) (data){\textbf{Data}};
+
+\node[draw, text width=3cm, text height=0.3cm, align=center] at (5,0) (preproc){\textbf{Pre-Processing}};
+
+
+\node[draw, text width=2cm, text height=0.2cm, align=center] at (2.8,-2.5) (sim){Similarity finding};
+\node[draw, text height=0.2cm, align=center] at (5,-2.5) (sam){Sampling};
+\node[draw, text height=1.2cm, align=center] at (7.1,-2.5) (dim){Dimension \\ Reduction:\\ \textit{PCA/SVD}};
+
+\node[draw, text width=2cm, text height=0.2cm, align=center] at (10,0)(analysis) {\textbf{Analysis}};
+
+\node[draw, text width=2.5cm, text height=0.2cm, align=center] at (10,-3.5) (pred){Prediction: \\ Content vs Collaborative filtering \\ \textit{kNN, ANN, SVM \& Bayesian Networks}};
+\node[draw, text width=2.5cm, text height=0.2cm, align=center] at (13,-2.5) (desc){Description/\\Clustering: \\ \textit{k-means,} \\ \textit{GMM}};
+
+\node[draw, text width=2cm, text height=0.2cm, align=center] at (13.5,0)(output) {\textbf{Output}};
+
+\draw [vecArrow](data) -- (preproc);
+\draw [vecArrow](preproc) -- (analysis);
+\draw [vecArrow](analysis) -- (output);
+\draw (preproc) edge[in=80,out=-135,->] (sim);
+\draw (preproc) edge[->] (sam);
+\draw (preproc) edge[out=-30, in=100,->] (dim);
+
+\draw (analysis) edge[out=-110, in=100,->] (pred);
+\draw (analysis) edge[out=-30, in=100,->] (desc);
+\end{tikzpicture}
+\end{figure*}
+A typical recommender system works by having multiple data processing stages and active sample selection is part of one of those steps (Figure~\ref*{fig:RecSysDiagram}, explained more in detailed in the Background section, provides a quick overview fo these steps). Thus the first aim is to build a working but flexible recommender system which would integration active sample selection. It is expected to base the recommender system on a collaborative filtering model called Probabilistic Matrix Factorization (PMF), which is based on the work of \cite{pmf}. This is because current active sample selection work is often based on this model and this model performs well on large sparse datasets. A library or premade model will not be used as it is less flexible and does not have a useful learning process that will help give insight into the inner workings of a recommender system.
+
+To test the recommender system sample datasets will be used. Several datasets have been identified due to their popularity in recommender systems literature:
+\begin{description}[style=standard,leftmargin=.7cm,font=\bfseries]
+  \item[MovieLens] is a movie recommendation website that makes subsets of its information(100 thousand, 1 and 10 million ratings in each respective dataset) publicly available for research purposes. Each available dataset is already set-up for use in recommender system testing, with cross-validation and test data already present.
+  \item[DrugBank] is a bioinformatics and cheminformatics database that combines detailed drug (i.e., chemical, pharmacological and pharmaceutical) data with comprehensive drug target data. A subset can be downloaded for easier processing and testing. As the data is biological and not user derived it is less likely to contain noise derived from indecisive users and fluctuations of opinions over time.
+  \item[Active Learning Challenge] Rather than one dataset, this is a set of datasets used explicitly for an active learning competition, sponsored by two journals \cite{al-chall}. The datasets contained are :
+  \begin{itemize}
+  \item \underline{HIVA} is a dataset aimed at predicting which compounds are active against the AIDS HIV infection.
+  \item \underline{IBN\_SINA} is a dataset of arabic words in an ancient manuscript to facilitate indexing.
+  \item \underline{ORANGE} is a noisy marketing dataset. The goal is to predict the likelihood of customers to change network provider, buy complimentary or value-added products or services. 
+  \end{itemize}
+\end{description}
+
+Small versions (100 thousand entries) of the datasets will be used for development purposes and performance (with respect to error rate and computational intensity) and larger scale use is used for further testing.
+
+Once a working implementation of a recommender system is achieved (this will be done by checking for an acceptable prediction/error rate on the provided test set) focus will be on implementing the work of Sutherland et al.\cite{active-mf}, where his work is made available on his website.
+
+Once this first step is achieved, different methods will be looked at to improve the accuracy or performance of this implementation -  whichever one is determined to be the largest bottleneck. The idea would be to implement either custom ideas or ones present in other papers, such as Jorge Silva's\cite{silva} implementation.
+
+In summary:
+\begin{itemize}
+\item \textit{Software/language used}: Matlab
+\item \textit{Data used}: Synthetic Data, Images, MovieLens, DrugBank and the Active Learning Challenge datasets
+\item \textit{Deliverable}: Active sample selection model which should be able to have a better prediction performance than random sampling, ideally with better time complexity.
+\end{itemize}
+
+\section{Report Structure}
+The report will first give an overview of the various recommender systems (matrix factorisation in particular) with a review of their performance. Given an insight into what matrix factorisation can achieve the concept of active sampling will be introduced by the use of a very basic algorithm. From this a more advanced algorithm is constructed and compared to other already existent algorithm. Performance of each algorithm is compared.
+%%% ----------------------------------------------------------------------
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End: 

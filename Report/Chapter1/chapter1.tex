@@ -1,0 +1,401 @@
+% \pagebreak[4]
+% \hspace*{1cm}
+% \pagebreak[4]
+% \hspace*{1cm}
+% \pagebreak[4]
+\newcommand\setrow[9]{
+  \setcounter{col}{1}
+  \foreach \n in {#1, #2, #3, #4, #5, #6, #7, #8, #9} {
+    \edef\x{\value{col} - 0.5}
+    \edef\y{9.5 - \value{row}}
+    \node[anchor=center] at (\x, \y) {\n};
+    \stepcounter{col}
+  }
+  \stepcounter{row}
+}
+\chapter{Recommender Systems}
+\ifpdf
+    \graphicspath{{Chapter1/Chapter1Figs/PN1G/}{Chapter1/Chapter1Figs/PDF/}{Chapter1/Chapter1Figs/}}
+\else
+    \graphicspath{{Chapter1/Chapter1Figs/EPS/}{Chapter1/Chapter1Figs/}}
+\fi
+\markright{\thechapter. Recommender System Basics}
+\section{Basics}
+For any decent test of active sample selection a matrix completion algorithm must be used. The basic idea such a system is graphically described in figure \ref{MatrixComp}. We have an incomplete matrix that tells us a certain amount of data about what movies each user likes or dislikes. From this we use a matrix completion algorithm to infer what the empty entries are. This thus allows a system to recommend potential movies a user may like or useful drug-target interactions that have not been tested out.
+\begin{figure}[!htbp]
+  \begin{center}
+\begin{tikzpicture}[scale=.6]
+
+  \begin{scope}
+    \draw (0, 0) grid (9, 9);
+    \draw[very thick, scale=9] (0, 0) grid (1, 1);
+
+    \setcounter{row}{1}
+    \setrow { }{3}{ }  {5}{ }{5}  { }{ }{ }
+    \setrow {1}{ }{ }  { }{ }{ }  { }{4}{ }
+    \setrow { }{ }{ }  {4}{3}{ }  {3}{ }{1}
+
+    \setrow { }{3}{ }  { }{4}{ }  {1}{4}{ }
+    \setrow { }{ }{2}  {4}{3}{ }  { }{4}{2}
+    \setrow { }{ }{ }  { }{3}{ }  { }{ }{1}
+
+    \setrow { }{1}{ }  {2}{ }{2}  { }{ }{ }
+    \setrow { }{3}{ }  {4}{ }{ }  {1}{ }{2}
+    \setrow { }{ }{ }  {4}{ }{ }  { }{4}{2}
+
+	\node[anchor=center] at (4.5, 9.5) {Movies};
+	\node[anchor=center, rotate=90] at (-0.5, 4.5) {Users};
+    \node[anchor=center] at (4.5, -0.5) {Incomplete User-Movie Matrix};
+  \end{scope}
+  
+   \begin{scope}
+\tikzstyle{vecArrow} = [thick, decoration={markings,mark=at position
+   1 with {\arrow[semithick]{open triangle 60}}},
+   double distance=1.4pt, shorten >= 5pt,
+   preaction = {decorate},
+   postaction = {draw,line width=1.4pt, white,shorten >= 4.5pt}]
+   
+\draw [vecArrow](9.5,4.5) -- (11,4.5);
+
+   \end{scope}
+
+  \begin{scope}[xshift=12cm]
+    \draw (0, 0) grid (9, 9);
+    \draw[very thick, scale=9] (0, 0) grid (1, 1);
+
+    \setcounter{row}{1}
+    \setrow { }{3}{ }  {5}{ }{5}  { }{ }{ }
+    \setrow {1}{ }{ }  { }{ }{ }  { }{4}{ }
+    \setrow { }{ }{ }  {4}{3}{ }  {3}{ }{1}
+
+    \setrow { }{3}{ }  { }{4}{ }  {1}{4}{ }
+    \setrow { }{ }{2}  {4}{3}{ }  { }{4}{2}
+    \setrow { }{ }{ }  { }{3}{ }  { }{ }{1}
+
+    \setrow { }{1}{ }  {2}{ }{2}  { }{ }{ }
+    \setrow { }{3}{ }  {4}{ }{ }  {1}{ }{2}
+    \setrow { }{ }{ }  {4}{ }{ }  { }{4}{2}
+    
+	\node[anchor=center] at (4.5, 9.5) {Movies};
+	\node[anchor=center, rotate=90] at (-0.5, 4.5) {Users};
+    \node[anchor=center] at (4.5, -0.5) {Completed Matrix};
+
+    \begin{scope}[blue, font=\sffamily\slshape]
+      \setcounter{row}{1}
+    \setrow {1}{ }{2}  { }{4}{ }  {2}{4}{2}
+    \setrow { }{3}{2}  {4}{3}{4}  {1}{ }{2}
+    \setrow {1}{2}{2}  { }{ }{4}  { }{3}{ }
+
+    \setrow {1}{ }{2}  {4}{ }{4}  { }{ }{2}
+    \setrow {1}{3}{ }  { }{ }{4}  {1}{ }{ }
+    \setrow {1}{2}{1}  {3}{ }{3}  {1}{3}{ }
+
+    \setrow {1}{ }{1}  { }{1}{ }  {1}{2}{1}
+    \setrow {1}{ }{2}  { }{4}{4}  { }{4}{ }
+    \setrow {1}{3}{2}  { }{3}{4}  {1}{ }{ }
+    \end{scope}
+
+  \end{scope}
+
+\end{tikzpicture}
+\end{center}
+Completed entries have their number represented in blue. Each movie is rated out of 5.
+    \caption{Sample Matrix Completion on Movie Data}
+    \label{MatrixComp}
+  
+\end{figure}
+
+Many commercial systems for recommender systems currently exist. For example Amazon, YouTube, Google, Netflix, IMDb and Last.fm are but a small sample of websites using recommender systems to suggest films, ads, music or products to users. In fact Netflix is known for the "Netflix Prize", an open competition that awarded \$1 million to a group of researchers that could create a recommender system achieving a 10\% or more improvement on their previous one.
+
+More formally, a recommender system database comes in matrix form, $R \in \mathbb{R}^{M \times N}$ with each entry containing a numerical quantifier of the relationship between the row item and column item. As not every entry is complete we can associate this to a mask matrix $Z \in \mathbb{R}^{M \times N}$, where $Z_{ij} \in \{0,1\} \forall i,j$. $0$ represents an unknown entry and $1$ a currently known entry.
+
+
+\nomenclature{RMSE}{Root Mean Square Error -  Measure of differences between values predicted by a model and the actual values:  $\sqrt{\frac{1}{N} \sum\nolimits_{i=1}^{N}(\hat{x}_i-x_i)^2}$}
+\nomenclature{CF}{Collaborative Filtering} 
+\nomenclature{PMF}{Probabilistic Matrix Factorisation} 
+\nomenclature{BPMF}{Bayesian Probabilistic Matrix Factorisation} 
+
+
+
+\section{Types of Recommender Systems}
+
+
+\subsection{Overview}
+Recommender systems typically work by having a pre-processing and analysis/matching stage with Figure \ref*{fig:RecSysDiagram} showing the various stages. Pre-processing will typically be clustering the data into groups, reducing the dimensionality (for example by a process similar to SVD) or creating a subset of data that is more manageable. Active sample selection fits in here. Then the actual processing stage is where the empty samples are filled in. There can also be a post-processing stage where certain generated samples are selected either due to their usefulness or high score (i.e. a high predicted product score may be selected as part of a monetisation strategy). 
+
+\nomenclature{SVD}{Singular Value Decomposition - A method to decompose a matrix into smaller dimension matrices}
+
+There are several types of Recommender Systems:
+\begin{description}[style=standard,leftmargin=.5cm,font=\bfseries]
+\item[Collaborative Filtering] In this type of system the user is placed into sub-groups that have similar taste. From this, it is expected that if user A has similar taste than user B on some products he is more likely to have the same one about different products.
+\item[Content-based filtering] In this system features are learned about content (such as item color, film type, music genre etc \ldots) and a user's profile of their tastes is built, allowing products to be recommended by their features rather than group similarity.
+\item[Demographic Based] In this system extra data that groups columns or users into categories (based on age or sex for example) is used to recommend users items in their respective category.
+\end{description}
+
+Each of the above methods can be done in several different ways and have varying performance. It would thus make sense to select the Netflix prize winner algorithm. However the winning proposal, by a team named "BellKor's Pragmatic Chaos", consisted of an ensemble of various recommender systems. This increases complexity and is not very practical to work with. Thus an algorithm that performs well but simple (and easily built upon) is preferred. This explains the choice of the Probabilistic Matrix Factorisation algorithm. Its RMSE on the Netflix dataset is 0.8861, about 7\% better than Netflix system\footnote{The goal of the Netflix prize was to achieve a performance increase of 10\%}. Bayesian Probabilistic Matrix Factorisation \cite{SalMnih2008}, an extension of PMF, will also quickly be covered due to its good performance on very sparse datasets. Finally it decomposes a matrix into two feature matrices which turn out to be very useful in the goal of active sample selection.
+
+\subsection{Probabilistic Matrix Factorisation}
+\label{sec:pmf}
+PMF works by assuming that each input sample comes with Gaussian noise. If we decompose $R$ into two matrices $\mathrm{U^{T} V}$ we can describe each item, with index $ij$ as $x_{ij}=\mathbf{u}_{i}^{T}\mathbf{v}_{j}+\epsilon_{ij}$ where $\epsilon_{ij} \sim  \mathcal{N} (0,\sigma^2_\epsilon)$. Equations \ref{eq:rsimeq} and \ref{eq:decomp} provide a quick intuition into the decomposition. The reason we decompose the matrix in two matrices is motivated by the want to extract features from each column and row item. This can be done by performing what is called a latent aspect model, which essentially creates a column and row matrices composed of the features and weightings of these items.
+\begin{equation} \label{eq:rsimeq}
+R \backsimeq U^{T} \cdot V
+\end{equation}
+\begin{equation}
+ \label{eq:decomp}
+U^{T} \cdot V=\begin{bmatrix}
+u_{11} & u_{12} & \cdots \\
+u_{21} & u_{22}& \cdots \\
+u_{31}  & u_{32} & \cdots \\
+u_{41}  & u_{42} & \cdots \\
+\vdots  & \vdots & \ddots
+\end{bmatrix} \cdot \begin{bmatrix}
+v_{11} & v_{21} & v_{31} &  \cdots \\[-0.1em] 
+v_{12} & v_{22} & v_{32} & \cdots \\[-0.1em]
+\vdots & \vdots & \vdots &  \ddots \\[-0.1em]
+\end{bmatrix}
+\end{equation}
+
+We can choose an arbitrary number of features $D$ to form the matrices $U \in \mathbb{R}^{D\times N}$ and $V \in \mathbb{R}^{D\times M}$. Essentially $U$ and $V$ contain the latent features of each row and column items, with $U_i$ and $V_j$ containing the row and column latent features. Assuming the Gaussian noise we can define the conditional distribution of $R$ as:
+\begin{equation}
+p(R|U,V,\sigma^2) = \prod_{i=1}^{N} \prod_{j=1}^{M} \left[\mathcal{N}(R_{ij}|U_i^T V_j,\sigma^2)\right]^{Z_{ij}}
+\end{equation}
+Remember that $Z$ is the mask matrix. $i$ and $j$ are the matrix entry coordinates. In addition to this we place Gaussian priors on row and column feature vectors:
+\begin{eqnarray}
+p(U|\sigma_U^2) = \prod_{i=1}^{N} \mathcal{N}(U_i|0,\sigma_U^2\mathbf{I}), &   p(V|\sigma_V^2) = \prod_{j=1}^{M} \mathcal{N}(V_j|0,\sigma_V^2\mathbf{I})
+\end{eqnarray}
+Now we assume row and column independence giving:
+\begin{equation*}
+P(U,V|\sigma_U^2\mathbf{I},\sigma_V^2\mathbf{I}) = p(U|\sigma_U^2)  p(V|\sigma_V^2)
+\end{equation*}
+We want to find the likelihood of $U$ and $V$ given the supplied parameters.
+\begin{align*}
+P(U,V|R,\sigma,\sigma_U^2\mathbf{I},\sigma_V^2\mathbf{I}) &= \dfrac{P(U,V,R|\sigma,\sigma_U^2\mathbf{I},\sigma_V^2\mathbf{I})}{P(R|\sigma^2)} \\
+&= \dfrac{P(R|U,V,\sigma^2)P(U,V|\sigma_U^2\mathbf{I},\sigma_V^2\mathbf{I})}{P(R|\sigma^2)} \\
+&= \dfrac{P(R|U,V,\sigma^2) p(U|\sigma_U^2)  p(V|\sigma_V^2)}{P(R|\sigma^2)}
+\end{align*}
+ We take the log likelihood of $P(U,V|R,\sigma,\sigma_U^2\mathbf{I},\sigma_V^2\mathbf{I})$ to maximise it.
+\begin{align}
+\ln (P(U,V|R,\sigma,\sigma_U^2\mathbf{I},\sigma_V^2\mathbf{I})) &= - \frac{1}{2 \sigma^2} \sum_{i=1}^{N} \sum_{j=1}^{M} Z_{ij}(R_{ij}-U_i^TV_j)^2 - \frac{1}{2\sigma_U^2} \sum_{i=1}^{N} \|U_i\|_{Fro}^2 
+\notag \\ &  - \frac{1}{2\sigma_V^2} \sum_{j=1}^{M} \|V_j\|_{Fro}^2 + C \label{eq:pmf_ml_log}
+\end{align}
+Where C is a number not depending on $U$ or $V$. From this we can get an error function to minimise (by inverting the signs).
+
+\begin{align}
+E&=\sum_{i=1}^{N} \sum_{j=1}^{M} Z_{ij}(R_{ij}-U_i^TV_j)^2 + \frac{\lambda_U}{2}\sum_{i=1}^{N} \|U_i\|_{Fro}^2 
++ \frac{\lambda_V}{2} \sum_{j=1}^{M} \|V_j\|_{Fro}^2
+\label{eq:pmf_err_func}
+\end{align}
+
+With $\lambda_U = \frac{\sigma^2}{\sigma_U^2}$ and $\lambda_V = \frac{\sigma^2}{\sigma_V^2}$ being regularisation parameters. We can remove the mask matrix from the equation and create a cell specific error function:
+\begin{align*}
+e_{ij}^2= (R_{ij}-U_i^TV_j)^2 + \frac{\lambda_U}{2}\sum_{i=1}^{N} \|U_i\|_{Fro}^2 
++ \frac{\lambda_V}{2} \sum_{j=1}^{M} \|V_j\|_{Fro}^2
+\end{align*}
+
+From $e_{ij}^2$ we can find $U$ $V$ satisfying $\underset{U,V}{\argmin} \, E$ through simple gradient descent \cite{nnmf-grad}. We use the simple but effective Widrow-Hoff learning rule:
+
+\begin{align*}
+U_{ik}^{t+1} &= U_{ik}^{t} - \mu \frac{\partial}{\partial U_{ik}}(e_{ij}^2) \\
+&= U_{ik}^{t} + \mu (2 e_{ij}V_{jk} - \lambda_U  U_{ik}^{t})\\
+V_{jk}^{t+1} &= V_{jk}^{t} - \mu \frac{\partial}{\partial V_{jk}}(e_{ij}^2) \\
+&= V_{jk}^{t} + \mu (2 e_{ij}U_{ik} - \lambda_V  V_{jk}^{t})\\
+\end{align*}
+$k$ is the feature index, as defined by $D$, $\mu$ i{\tiny }s the learning rate and $t$ is the iteration index. The steps above are repeated until convergence (as defined by a custom criteria) or a fixed number of iterations. This allows us to learn the features of each column and row. Once $U$ and $V$ are learned we can estimate the full matrix by:
+\begin{align}
+\hat{R} = U^T V
+\end{align}
+For very large matrices where only a specific entry is needed a single entry can be predicted by $\hat{R}_{ij} = U_i^T V_j$.
+\subsection{Bayesian Probabilistic Matrix Factorisation}
+\label{sec:bpmf}
+\begin{figure}[!ht]
+  \begin{center}
+    \begin{tabular}{cc}
+      \input{Chapter1/Chapter1Figs/pmf.tikz} &
+      \input{Chapter1/Chapter1Figs/bpmf.tikz} \\
+      PMF & BPMF
+    \end{tabular}
+  \end{center}
+  \caption{Graphical Model for PMF and BPMF}
+  \label{fig:bpmf_pmf_gm}
+\end{figure}
+
+
+Bayesian Probabilistic Matrix Factorisation has been proposed as an extension of PMF \cite{SalMnih2008}. It places Gaussian priors on $U$ and $V$ and Gaussian-Wishart priors on the row and column hyperparameters. A graphical representation to compare to PMF is found in figure \ref{fig:bpmf_pmf_gm}.
+
+\begin{align*}
+p(U|\mu_U,\Lambda_U) &= \prod\limits_{i=1}^{N} \mathcal{N}(U_i|\mu_U,\Lambda_U^{-1})\\
+p(V|\mu_V,\Lambda_V) &= \prod\limits_{j=1}^{M} \mathcal{N}(V_j|\mu_V,\Lambda_V^{-1})
+\end{align*}
+$\Lambda^{-1}$ is the precision matrix and $\mu$ is the mean of each feature vector. $\Theta_U=\{\mu_U,\Lambda_U\}$ and $\Theta_V=\{\mu_V,\Lambda_V\}$ are defined as the row and column hyper parameters.
+\begin{align*}
+p(\Theta_U|\Theta_0) = p(\mu_U|\Lambda_U)p(\Lambda_U)= \mathcal{N}(\mu_U|\mu_0,(\beta_0 \Lambda_U)^{-1})\mathcal{W}(\Lambda_U|W_0, \nu_0) \\
+p(\Theta_V|\Theta_0) = p(\mu_V|\Lambda_V)p(\Lambda_V)= \mathcal{N}(\mu_V|\mu_0,(\beta_0 \Lambda_V)^{-1})\mathcal{W}(\Lambda_V|W_0, \nu_0)
+\end{align*}
+We have $\mathcal{W}$ as the Wishart distribution with $\nu_0$ degrees of freedom and $W_0 \in \mathbb{R}^{D \times D}$. $\Theta_0=\{\mu_0,\nu_0,\Lambda_0\}$ is defined with $\mu_0=0$, $\nu_0=D$ and $W_0=\mathbf{I}_{D\times D}$.
+After rearranging we end up with:
+\begin{align*}
+P(U,V|R,\Theta_U,\Theta_V) =\int \int P(R | U,V) P(U,V | R,\Theta_U,\Theta_V) P(\Theta_U,\Theta_V | \Theta_0)d\Theta_U d\Theta_V
+\end{align*}
+The above equation cannot be resolved analytically and approximate methods must be used. Thus we resort to a MCMC method, Gibbs sampling. This allows us to generate multiple approximations of $U$ and $V$ feature matrices and then get a better approximation out of it.
+\nomenclature{MCMC}{Markov chain Monte Carlo - A means of approximating a probability distribution}
+The outline of Gibbs sampling for BPMF is as follows:
+\begin{enumerate}
+  \item Initialise $U^1$, $V^1$
+  \item For $t=1\dots T$
+	\begin{itemize}
+	  \item Sample hyperparameters $\Theta_U$ and $\Theta_V$
+	  \item For $i=1 \dots N$ sample row features in parallel:
+	  \begin{align*}
+	  U_i^{t+1} \sim p(U_i^t|R, V^t ,\Theta_U^t)
+	  \end{align*}
+	  \item For $j=1 \dots M$ sample column features in parallel:
+	  \begin{align*}
+	  V_j^{t+1} \sim p(V_j^t|R, U^t ,\Theta_V^t)
+	  \end{align*}
+	\end{itemize}
+\end{enumerate}
+More details on BPMF and can be found in the appendix section \ref{sec:app_bpmf}.
+
+For the purpose of this project it is mainly useful to remember that BPMF performs well on very sparse matrices - in  part due to the MCMC sampling process which provides a good approximation of the true probability distribution of data points.
+
+\subsection{Kernelized Probabilistic Matrix Factorization}
+\nomenclature{KMPF}{Kernelized Probabilistic Matrix Factorisation} 
+Another variant of PMF that was tested was KMPF \cite{kpmf}. The main ideas to take from it are that it functions like PMF but with the crucial difference that a latent Gaussian process prior is placed over all rows and columns on top of a latent vector on each row and column. This means that it captures side information through kernel matrices that contain the covariance information. The intended use of these kernels is to use separate graph data, such as the social connection between users. However in the case this data does not exist a certain correlation between columns and rows can be assumed, which still results in good performances.
+
+Performance of KPMF is best on very sparse data due to its ability to \textit{smooth} out data from its assumption of inter-row and inter-column correlation. In fact KPMF can work very well on empty rows or columns by filling them in with the most likely values - something PMF and BPMF struggle with.  Once more data on the dataset is available KPMF's performance can even be worse than the traditional model due to forcing these correlations. In the context of active sample selection, where more cells become available over time, this could cause a problem in determining the usefulness of each new discovered cell.
+\section{Evaluation and comments}
+\subsection{Performance test}
+
+To understand what may be best to use we test each type of algorithm on a dataset. This allows to see its advantages and weaknesses. For the first test we look at figure \ref{fig:5pcmat}.
+
+\begin{figure}[!htbp]
+  \begin{center}
+    \resizebox{\textwidth}{!}{\input{Chapter1/Chapter1Figs/5pcmatrix.tikz}}
+    Each colour is made to represent a rating out of 5. Dark blue represents a 1 and red a rating of 5. The mean is represented in green.
+    
+    A row could be used to represent a user and a column a movie.
+    \caption{Rating Predictions on synthetic data 5\% complete}
+     \label{fig:5pcmat}
+  \end{center}
+\end{figure}
+\begin{figure}[!htbp]
+  \begin{center} 
+    \resizebox{\textwidth}{!}{\input{Chapter1/Chapter1Figs/15pcmatrix.tikz}}
+    For KPMF: RMSE=1.1867 for $\sigma=10$
+    \caption{Rating Predictions on synthetic data 15\% complete}
+    \label{fig:15pcmat}
+  \end{center}
+\end{figure}
+For this figure data was randomly generate by generating 2 matrices $U \in \mathbb{R}^{80\times 5}$ and $V \in \mathbb{R}^{50\times 5}$, that is 5 latent features. A  random mask allowing the variants of PMF to only access 5\% of the data was made and used for matrix completion. The Root Mean Square Error(RMSE) of the predicted data was used as a measure of success. According to RMSE the best performing algorithm is KPMF, which was on average 1.3 off the real value. However all it has effectively done is predicted the mean with some amount of variation for all unknown values. We can see the effect of Gibbs sampling from BPMF as it captures the data distribution better than PMF or KPMF. Despite this it has a higher RMSE. This is one weakness of RMSE as some data sets may penalise more for guessing a value off the mean than one nearer to the mean. Finally PMF is seen to perform the worse, simply failing to predict many entries having very little information.
+
+Making more data available, such as 15 \% of the dataset lead to an improvement for both BPMF and PMF as seen in figure \ref{fig:15pcmat}. PMF experienced the largest RMSE decrease -  something to keep in mind for sample selection. KPMF's RMSE has also improved however its output did not look any better.
+\begin{figure}[!htbp]
+  \begin{center}
+    \resizebox{\textwidth}{!}{\input{Chapter1/Chapter1Figs/eiffel_tower.tikz}}
+    Image corrupted by drawing over and virtual spray paint
+    \caption{Image Restoration}
+    \label{fig:eiffel_tower}
+  \end{center}
+\end{figure}
+
+In an effort to better understand each algorithm an image restoration trial was done. This is possible due to the rows and columns (pixel wise) in images to exhibit features about them. For example a column may have features indicating 45\% sky hue, 25\% Eiffel tower hue and 30\% ground hue with a row another having its own distribution. Multiplying both together would give the best estimate of the pixel at the specific row-column combination.
+In figure \ref{fig:eiffel_tower} a picture with drawing over was supplied to each PMF variant. This was equivalent with supplying 88\% of the data. This time the scales are reversed, with PMF coming out as the clear winner. Not only is the image very similar to the original but little corruption in the overall restoration happened. BPMF failed at this task and distorted the picture overall, blurring it up\footnote{In a practical application of this algorithm it would be possible to only replace the unknown pixels.}. KPMF was able to restore the know pixels correctly but did not do a good job of predicting the missing ones, choosing to predict the mean color instead. KMPF is supposed to provide superior image restoration if supplied the correct kernel \cite{kpmf}. However, despite providing a diffusion kernel indicating that each pixel is correlated to its neighbouring ones, KPMF did not live up to the task.
+
+
+For the purpose of this project mainly PMF and BPMF will be used as they showed the most promising performances and can be easily customised and built upon. This is especially useful as active sampling builds on top of recommender systems.
+
+Note that the used datasets, synthetic and movielens, have their values ranging from 1 to 5. Thus a RMSE of 2 would mean that predictions are off by 2 stars on average. A good RMSE would thus be under 1, meaning movie predictions are only off by 1 star or less. When possible, other datasets used will be normalised between 1 and 5 to have the RMSE somewhat comparable.
+
+\subsection{Choosing parameters}
+All the above PMF variants all relied on one or many parameters. For example PMF uses\footnote{This is actually a combination of $\lambda_U$ and $\lambda_V$ from equation \ref{eq:pmf_err_func}} $\lambda$. These parameters nearly always affect the system performance and choosing them correctly is essential. While it is possible optimise them as such:
+\begin{align*}
+\underset{U,V,\lambda}{\argmin}\, E(U,V,\lambda)
+\end{align*}
+This is not a good idea. Indeed $\lambda$ is a regularisation parameter needed to allow the function to correctly generalise\footnote{In an optimisation context it can be seen as a Lagrange multiplier that enforces a constraint} and if optimised in a similar way it would tend to 0 defeating its purpose, see \ref{sec:lag_lambd_optim}. It would essentially perfectly (over)fit the data but not perform predictions correctly. 
+
+Other parameters, such as D (the number of features), could be optimised in a similar way but this increases complexity necessarily. Instead these parameters are usually tweaked by hand and this is what has been done here as this is not the main focus of research.
+\subsubsection{Learning rate $\mu$}
+
+$\mu$ is an essential parameter to most iterative learning algorithms. It is appropriately called the learning rate as it defines the rate at which parameters are learnt. If we imagine a convex curve and we are located at a random location on it $\mu$ essentially defines how far we can go on each iteration to get closer to the minimum. Should it be too small a very high number of iterations will be needed to reach satisfactory performance. A too large learning rate may fail to converge due to the steps "jumping around" a minimum but never reaching it - alternatively it could simply overflow with the error increasing at each iteration.
+
+\subsection{Pre-Processing datasets}
+Before processing data, it is often advisable to pre-process it. This means cleaning up the data in ways that ensure good performance.
+\subsubsection{Normalisation}
+The first step that is often taken is to normalise data between two values - by convention 0 and 1 \footnote{For other types of learning algorithms normalisation may be between $[-1,1]$ and zero meaned.}. This ensures that some parameters used, such as regularisation or precision, need not be tweaked a lot when switching between datasets. Additionally when performing gradient descent (as in section \ref{sec:pmf}) over multiple dimensions it is preferable the error for each datapoint is in a similar order of magnitude.
+\subsubsection{Discrete Data}
+Discrete data is data that only takes a fixed number of values, which is applicable to movie-user datasets where a 5 star rating is given. To process these data is first be normalised between 0 and 1, 0 representing 1 and 1 representing 5. From this, parameters are learnt and data can be predicted. Placing the values back between 1 and 5 will result in non-integer values. Expectedly values are rounded up or down accordingly. Since $3.1$ and $3.45$ will both be rounded down to $3$ we can use the decimal as a measure of uncertainty, that is $3.1$ has a greater probability of actually being $3$ rather than $3.45$. While this is not a fail safe system the deviation from the discrete values can be useful for measuring uncertainty in the model.
+\subsection{Online vs Offline learning}
+Usually data will be fed to an algorithm and parameters returned to be used for prediction. However there are instances when new data points will be made available and a better performance will be achieved by retraining the parameters with the new data. When a model is retrained from scratch it is said to be done offline. Doing it online means training it once initially and then only carrying out a few steps to update the model when a new sample is received. Collaborative Filtering Algorithms, such as PMF, can be made online \cite{onlinepmf} by first training $U$ and $V$ for initial data and then updating these parameters at each incoming sample.
+
+\begin{table}[!htb]
+ \begin{tabular}{l|p{0.4\textwidth}|p{0.4\textwidth}|}
+  & \textbf{Online} & \textbf{Offline} \\ \hline
+  \textbf{Pro} & Fast update, less iterations  &  Adapts better to new items \\
+ & Reuses parameters  & Less local minima issues   \\  \hline
+    \textbf{Con} &   Can get stuck in local minima  &     Time intensive    \\
+    & & Reinitialises parameters \\
+    \hline
+ \end{tabular}
+ \caption{Comparison of online and offline matrix completion algorithms}
+ \label{table:online_offline}
+\end{table}
+
+
+Table \ref{table:online_offline} shows a comparison of the pros and cons of online and offline learning for matrix factorisation systems. The general problem with online PMF is that the error function for PMF \ref{eq:pmf_err_func} is biconvex in $U$ and $V$ and that the minimum is found by alternatively updating each variable, which does not ensure global minimum. Thus if the parameters are stuck in a local minimum online updating will not help and randomly reinitialising them will be better. This is why we will default to using offline updating for the purpose of this report.
+
+
+\subsection{Test and Validation dataset}
+\begin{figure}[!htbp]
+  \begin{center} 
+    \resizebox{\textwidth}{!}{\input{Chapter1/Chapter1Figs/over_under_fit.tikz}}
+    \caption{Examples of different model fitting}
+    \label{fig:over_underfit}
+  \end{center}
+\end{figure}
+From section \ref{sec:pmf} we see that learning from a dataset involves minimising an error function. The problem with this is that we are subject to a "tunnel vision" where only the given data is considered while minimising the error function. A model that only fits the test data, as in figure \ref{fig:over_underfit}, can overfit it and not generalise well. This is one of the reason the regularisation parameters $\lambda_U$ and $\lambda_V$ exist, as they avoid $U$ and $V$ becoming too large and only being specific to the test data. Another way to avoid this is to consider splitting up the dataset into a test set and a validation set. The test set will be used for training. However at each parameter step update, we can calculate the RMSE from the validation data - i.e. data not used for training. As soon as a step is found to lead to an increase of validation RMSE we can infer that the model is potentially starting to overfit and stopping training of parameters is preferable.
+
+\subsection{Data quality}
+Another issue with any machine learning system is that of data quality. Any inaccurate or badly generated data can prove to be a major bottleneck in the performance of machine learning systems. Many datasets, especially when they come from human made sources (such as film ratings or opinion polls), have a lot of noise. Noise is essentially the $\epsilon_{ij}$ component which we referred to earlier and creating a model assuming a certain amount of noise is one of the first steps that can be taken to deal with this issue. Note that only incidental noise rather than intentional noise can be dealt with (intentional noise would be defined as data that is maliciously entered or be subject to a strong bias for external reasons). Incidental noise could be reduced to a certain extent by grouping items or users into categories and smoothing out the similar ratings. This and similar techniques can introduce bias in the system and their use is only suggested if it translates to real-world performance increase. Other methods to reduce noise include re-querying a particular sample (\cite{toledo13} i.e. asking a user to re-rate an item, or performing the same experiment again), however this will not be done as the aim of this project is to reduce requeries as well as the fact that we cannot just ask for a data-point to be re-evaluated in our datasets.
+
+To avoid these issues most simulations will be carried on synthetic data, which is less affected by noise.
+
+
+%... and some more ...
+%
+%Now I would like to cite the following: \cite{latex} and \cite{texbook}
+%and \cite{Rud73}.
+%
+%I would also like to include a picture ...
+%
+%\begin{figure}[!htbp]
+%  \begin{center}
+%    \leavevmode
+%    \ifpdf
+%      \includegraphics[height=6in]{aflow}
+%    \else
+%      \includegraphics[bb = 92 86 545 742, height=6in]{aflow}
+%    \fi
+%    \caption{Airfoil Picture}
+%    \label{FigAir}
+%  \end{center}
+%\end{figure}
+%
+%% above code has been macro-fied in Classes/MacroFile.tex file
+%%\InsertFig{\IncludeGraphicsH{aflow}{6in}{92 86 545 742}}{Airfoil Picture}{FigAir}
+%
+%So as we have now labelled it we can reference it, like so (\ref{FigAir}) and it
+%is on Page \pageref{FigAir}. And as we can see, it is a very nice picture and we
+%can talk about it all we want and when we are tired we can move on to the next
+%chapter ...
+%
+%I would also like to add an extra bookmark in acroread like so ...
+%\ifpdf
+%  \pdfbookmark[2]{bookmark text is here}{And this is what I want bookmarked}
+%\fi
+% ------------------------------------------------------------------------
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End: 

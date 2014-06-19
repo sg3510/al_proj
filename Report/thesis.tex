@@ -1,0 +1,194 @@
+%input macros (i.e. write your own macros file called MacroFile1.tex)
+%\include{Macros/MacroFile1}
+
+ \documentclass[oneside,11pt]{Classes/CUEDthesisPSnPDF}
+ \usepackage{enumitem}
+\usepackage{tikz}
+%allow eps
+\usepackage{epstopdf}
+%\usepackage{mathpazo}
+\newcounter{row}
+\newcounter{col}
+\makeglossary
+%float
+\usepackage{float}
+%pseudocode
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+%subfigures
+\usepackage{subfig}
+%\renewcommand*{\familydefault}{\sfdefault}
+%good quotes
+\usepackage{csquotes}
+\MakeOuterQuote{"}
+
+%AMSMaths
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+%tight list
+
+%define argmin
+\DeclareMathOperator*{\argmin}{arg\,min}
+%\DeclareMathAlphabet{\mathcal}{OMS}{cmsy}{m}{n}
+\usetikzlibrary{shapes,shadows,arrows,positioning,graphs, decorations.markings}
+\usetikzlibrary{bayesnet}
+\usepackage{pgfplots}
+\pgfplotsset{compat=newest} 
+  \pgfplotsset{plot coordinates/math parser=false}
+%extern tikz
+\usetikzlibrary{external}
+\tikzexternalize[prefix=tikzfig/]
+\tikzset{external/mode=graphics if exists}
+%color pack
+\usepackage{xcolor}
+%include matlab code
+\usepackage[framed,numbered,autolinebreaks,useliterate]{mcode}
+
+\ifpdf
+    \pdfinfo { /Title  (Imperial College London EEE Masters Project)
+               /Creator (TeX)
+               /Producer (pdfTeX)
+               /Author (Sebastian Grubb sg3510@ic.ac.uk)
+               /CreationDate (D:20030101000000)  %format D:YYYYMMDDhhmmss
+               /ModDate (D:20030815213532)
+               /Subject (Imperial Electrical and Electronic Engineering Masters)
+               /Keywords (Masters, Thesis, EE, Machine Learning)}
+    \pdfcatalog { /PageMode (/UseOutlines)
+                  /OpenAction (fitbh)  }
+\fi
+
+\title{Active Sample Selection for Large Scale Matrix Completion}
+
+\ifpdf
+  \author{\href{mailto:sg3510@ic.ac.uk}{Sebastian Grubb}}
+  \collegeordept{\href{http://www3.imperial.ac.uk/electricalengineering}{Department of Electrical and Electronic Engineering}}
+  \university{\href{http://www3.imperial.ac.uk/}{Imperial College London}}
+% insert below the file name that contains the crest in-place of 'UnivShield'
+  \crest{\includegraphics[width=30mm]{imperial}}
+\else
+  \author{Sebastian Grubb}
+  \collegeordept{Department of Electrical and Electronic Engineering}
+  \university{Imperial College London}
+% insert below the file name that contains the crest in-place of 'UnivShield'
+  \crest{\includegraphics[bb = 0 0 292 336, width=30mm]{imperial}}
+\fi
+%
+% insert below the file name that contains the crest in-place of 'UnivShield'
+% \crest{\IncludeGraphicsW{UnivShield}{40mm}{14 14 73 81}}
+%
+\renewcommand{\submittedtext}{Final year project submitted for the degree of}
+\degree{Electrical and Electronic Engineering}
+\degreedate{June 2014}
+
+% turn of those nasty overfull and underfull hboxes
+\hbadness=10000
+\hfuzz=50pt
+
+% Put all the style files you want in the directory StyleFiles and usepackage like this:
+\usepackage{StyleFiles/watermark}
+
+% Comment out the next line to get single spacing
+\onehalfspacing
+
+\begin{document}
+\begin{titlepage}
+% \newgeometry{top=25mm,bottom=25mm,left=38mm,right=32mm}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+% \fontfamily{phv}\selectfont
+
+{
+\Large
+\raggedright
+Imperial College London\\[12pt]
+Department of Electrical and Electronic Engineering\\[12pt]
+Final Year Project Report 2014\\[12pt]
+
+}
+\rule{\columnwidth}{3pt}
+
+\vfill
+
+\centering
+\includegraphics[width=0.6\columnwidth,height=60mm,keepaspectratio]{ThesisFigs/imperial_crest.eps}
+
+\vfill
+
+\setlength{\tabcolsep}{0pt}
+\begin{tabular}{p{40mm}p{\dimexpr\columnwidth-40mm}}
+Project Title: & \textbf{Active Sample Selection for Large Scale Matrix Completion} \\[12pt]
+Student: & \textbf{\href{mailto:sg3510@ic.ac.uk}{Sebastian Grubb}} \\[12pt]
+CID: & \textbf{00639926} \\[12pt]
+Course: & \textbf{EE4} \\[12pt]
+Project Supervisor: & \textbf{Dr Wei Dai \& Dr Moez Draief} \\[12pt]
+Second Marker: & \textbf{Dr Cong Ling} \\
+\end{tabular}
+\end{titlepage}
+%\language{english}
+
+% A page with the abstract on including title and author etc may be
+% required to be handed in separately. If this is not so, then comment
+% the below 3 lines (between '\begin{abstractseparte}' and 
+% 'end{abstractseparate}'), normally like a declaration ... needs some more
+% work, mind as environment abstracts creates a new page!
+% \begin{abstractseparate}
+%   \input{Abstract/abstract}
+% \end{abstractseparate}
+
+
+
+
+% Using the watermark package which is in StyleFiles/
+% and to remove DRAFT COPY ONLY appearing on the top of all pages comment out below line
+%\watermark{DRAFT COPY ONLY}
+
+
+%\maketitle
+
+%set the number of sectioning levels that get number and appear in the contents
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{3}
+
+\frontmatter % book mode only
+\pagenumbering{roman}
+%\include{Dedication/dedication}
+\include{Acknowledgement/acknowledgement}
+\include{Abstract/abstract}
+
+\tableofcontents
+\listoffigures
+%\printglossaries
+\renewcommand{\nomname}{List of Abbreviations}
+\printnomenclature[2cm]  %% Print the nomenclature
+%\printglossary
+\addcontentsline{toc}{chapter}{Glossary}
+
+
+\mainmatter % book mode only
+\include{Introduction/introduction}
+\include{Chapter1/chapter1}
+\include{Chapter2/chapter2}
+\include{Chapter3/chapter3}
+\include{Chapter4/chapter4}
+\include{Conclusions/conclusions}
+\backmatter % book mode only
+
+
+
+\bibliographystyle{deplainnat}
+%\bibliographystyle{Classes/CUEDbiblio}
+%\bibliographystyle{Classes/jmb}
+%\bibliographystyle{Classes/jmb} % bibliography style
+\renewcommand{\bibname}{References} % changes default name Bibliography to References
+\bibliography{References/references} % References file
+
+
+\appendix
+\renewcommand{\thesection}{A.\arabic{section}}
+\setcounter{figure}{0} \renewcommand{\thefigure}{A.\arabic{figure}}
+\include{Appendix1/appendix1}
+\renewcommand{\thesection}{B.\arabic{section}}
+\setcounter{figure}{0} \renewcommand{\thefigure}{B.\arabic{figure}}
+\include{Appendix2/appendix2}
+\end{document}

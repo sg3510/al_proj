@@ -1,0 +1,90 @@
+\ifpdf
+    \graphicspath{{Appendix2/Appendix2Figs/PN1G/}{Appendix2/Appendix2Figs/PDF/}{Appendix2/Appendix2Figs/}}
+\else
+    \graphicspath{{Appendix2/Appendix2Figs/EPS/}{Appendix2/Appendix2Figs/}}
+\fi
+\setcounter{section}{0}
+\chapter{Appendix B}
+\markright{Appendix B}
+\section{Test Data and Figures}
+
+\begin{figure}[!htbp]
+  \begin{center}
+    \resizebox{\textwidth}{!}{\input{Appendix2/Appendix2Figs/imagerestore.tikz}}
+    \caption{Image Restoration with Matrix Factorisation with 75\% complete data}
+    \label{Image Restore}
+  \end{center}
+\end{figure}
+
+\begin{figure}[!htbp]
+  \begin{center}
+    \includegraphics[width=\textwidth]{random_pmf_err}
+
+10 different random sampling simulations on synthetic data.
+
+    \includegraphics[width=\textwidth]{random_pmf_err_av}
+  
+Average of 10 simulations.
+\end{center}
+Original data complete at 1.25\% (with another 1.25\% as validation data)
+
+$\lambda = 0.01$, $D=30$
+    \caption{Random Sampling Performance}
+    \label{fig:RandomPMF}
+\end{figure}
+
+
+\begin{figure}[!htbp]
+  \begin{center}
+    \resizebox{\textwidth}{!}{\input{Appendix2/Appendix2Figs/eiffel_targeted.tikz}}
+\end{center}
+Original data complete at 1.25\% (with another 1.25\% as validation data)
+
+Data is downsampled and rounded Eiffel tower image to fit $[1,5]$.
+
+Online PMF, $\lambda = 0.01$, $D=30$
+    \caption{Minimum Knowledge Search on Eiffel Tower}
+    \label{fig:eiffel_active_mks}
+\end{figure}
+
+\begin{figure}[!htbp]
+  \begin{center}
+  \resizebox{\textwidth}{!}{\input{Appendix2/Appendix2Figs/cks_end_synth.tikz}}
+Average of 10 simulations.
+\end{center}
+Original data complete at 1.25\% (with another 1.25\% as validation data)
+
+Note how the performance at the beginning is very good but as soon as information about most clusters is gained performance is worse due to an area of little information in a cluster of high information being ignored.
+
+$\lambda = 0.01$, $D=7$
+    \caption{CKS Performance on Synthetic Data - Local Cluster Oversight}
+    \label{fig:cks_end_synth}
+\end{figure}
+
+\section{Code}
+
+This contains samples of the main code used throughout the project. The full code can be found on \url{https://github.com/sg3510/al_proj/}
+\subsection{PMF}
+A version with validation set and overfitting is present on github.
+\lstinputlisting[label=pmfcode,caption=PMF Gradient Descent]{Code/matrixfactoriser/pmf_func.m}
+
+\subsection{CKS}
+\lstinputlisting[label=ckscode,caption=Clustered Knowledge Selection criteria generation]{Code/routines/CKS_UV_cluster.m}
+
+\subsection{Matrix-Normal Variance calculation}
+
+\lstinputlisting[label=mnvarcode,caption=Minimum Variance Calculation]{Code/routines/MN_V.m}
+
+\lstinputlisting[label=e2calc,caption=2 Input sample expectation based on parameters]{Code/routines/expect_norm2.m}
+
+\lstinputlisting[label=e4calc,caption=4 Input sample expectation based on parameters]{Code/routines/expect_norm2.m}
+
+
+\subsection{Main Runtime Code for active sampling simulation}
+\lstinputlisting[label=maincalc,caption=Code base for Active Sampling]{Code/main.m}
+% ------------------------------------------------------------------------
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End: 

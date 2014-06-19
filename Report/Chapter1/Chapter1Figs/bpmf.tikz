@@ -1,0 +1,54 @@
+% model_pca.tex
+%
+% Copyright (C) 2012 Jaakko Luttinen
+%
+% This file may be distributed and/or modified
+%
+% 1. under the LaTeX Project Public License and/or
+% 2. under the GNU General Public License.
+%
+% See the files LICENSE_LPPL and LICENSE_GPL for more details.
+
+% PCA model
+
+%\beginpgfgraphicnamed{model-pca}
+\begin{tikzpicture}
+
+  % Define nodes
+  \node[obs]                               (y) {$R_{ij}$};
+  \node[latent, above=of y, xshift=-1.5cm] (w) {$V_j$};
+  \node[latent, above=of y, xshift=1.5cm]  (x) {$U_i$};
+  \node[const, below=1.4cm of y]            (t) {$\alpha$};
+  \node[latent, left=1cm of w]            (mv) {$\mu_V$};
+  \node[latent, above=1cm of mv]            (lv) {$\Lambda_V$};
+  \node[const, left=1cm of mv]            (m0v) {$\mu_0$};
+  \node[const, above=1cm of lv]            (l0v) {$\nu_0$, $W_0$};
+  
+  \node[latent, right=1cm of x]            (mu) {$\mu_U$};
+  \node[latent, above=1cm of mu]            (lu) {$\Lambda_U$};
+  \node[const, right=1cm of mu]            (m0u) {$\mu_0$};
+  \node[const, above=1cm of lu]            (l0u) {$\nu_0$, $W_0$};
+
+  % Connect the nodes
+  \edge {x,w,t} {y} ; %
+  \edge {mv}{w} ;
+  \edge {lv}{mv,w} ;
+  \edge {m0v}{mv} ;
+  \edge {l0v}{lv} ;
+ 
+  \edge {mu}{x} ;
+  \edge {lu}{mu,x} ;
+  \edge {m0u}{mu} ;
+  \edge {l0u}{lu} ;
+
+  % Plates
+  \plate {yx} {(x)(y)} {$i=1..N$} ;
+  \plate {} {(w)(y)(yx.north west)(yx.south west)} {$j=1..M$} ;
+
+\end{tikzpicture}
+%\endpgfgraphicnamed
+
+%%% Local Variables: 
+%%% mode: tex-pdf
+%%% TeX-master: "example"
+%%% End: 

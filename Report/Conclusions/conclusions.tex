@@ -1,0 +1,24 @@
+\def\baselinestretch{1}
+\chapter{Conclusion}
+\ifpdf
+    \graphicspath{{Conclusions/ConclusionsFigs/PNG/}{Conclusions/ConclusionsFigs/PDF/}{Conclusions/ConclusionsFigs/}}
+\else
+    \graphicspath{{Conclusions/ConclusionsFigs/EPS/}{Conclusions/ConclusionsFigs/}}
+\fi
+
+%\def\baselinestretch{1.66}
+
+This project has briefly introduced us to the Probabilistic Matrix Factorisation variant of matrix completion methods and their applications to various situations including movie recommendation, drug discovery and image restoration. From this many essential concepts and algorithms relating to machine learning were covered such as regularisation, cost function optimisation and clustering. With this knowledge, active sampling was introduced as a formal method to request new samples from a matrix formatted dataset with the goal of increasing model performance. The motivation for active sampling included helping the scientific decision process as well as knowing what products are best to ask a user to improve recommendations.
+
+The active sampling algorithms presented included some already existent ones, as well as a greedy approach. Two self proposed algorithms are proposed. One called Minimum Knowledge Search is very basic and serves more an educational purpose. The second one called Clustered Knowledge Search takes some of the concepts learnt from other algorithms to create a similarly performing sampling algorithm.
+
+Performance was first tested on smaller datasets and then on larger ones - with satisfactory performance of the proposed Clustered Knowledge Search which performs similarly to more complex algorithms with a smaller overhead, and was noticeably so on very large datasets - though at the cost of targeting accuracy. The higher targeting efficiency of the Markov Chain Monte Carlo Variational Search technique was also appreciated for its good performance.
+
+%%% ----------------------------------------------------------------------
+
+% ------------------------------------------------------------------------
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End: 

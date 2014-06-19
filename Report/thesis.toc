@@ -1,0 +1,83 @@
+\select@language {english}
+\contentsline {chapter}{Contents}{iii}{chapter*.1}
+\contentsline {chapter}{List of Figures}{vi}{chapter*.2}
+\contentsline {chapter}{Glossary}{viii}{chapter*.3}
+\contentsline {chapter}{\numberline {1}Introduction}{1}{chapter.1}
+\contentsline {section}{\numberline {1.1}Outline}{1}{section.1.1}
+\contentsline {section}{\numberline {1.2}Project Specification}{2}{section.1.2}
+\contentsline {section}{\numberline {1.3}Report Structure}{4}{section.1.3}
+\contentsline {chapter}{\numberline {2}Recommender Systems}{5}{chapter.2}
+\contentsline {section}{\numberline {2.1}Basics}{5}{section.2.1}
+\contentsline {section}{\numberline {2.2}Types of Recommender Systems}{6}{section.2.2}
+\contentsline {subsection}{\numberline {2.2.1}Overview}{6}{subsection.2.2.1}
+\contentsline {subsection}{\numberline {2.2.2}Probabilistic Matrix Factorisation}{7}{subsection.2.2.2}
+\contentsline {subsection}{\numberline {2.2.3}Bayesian Probabilistic Matrix Factorisation}{9}{subsection.2.2.3}
+\contentsline {subsection}{\numberline {2.2.4}Kernelized Probabilistic Matrix Factorization}{11}{subsection.2.2.4}
+\contentsline {section}{\numberline {2.3}Evaluation and comments}{11}{section.2.3}
+\contentsline {subsection}{\numberline {2.3.1}Performance test}{11}{subsection.2.3.1}
+\contentsline {subsection}{\numberline {2.3.2}Choosing parameters}{15}{subsection.2.3.2}
+\contentsline {subsubsection}{\numberline {2.3.2.1}Learning rate $\mu $}{15}{subsubsection.2.3.2.1}
+\contentsline {subsection}{\numberline {2.3.3}Pre-Processing datasets}{16}{subsection.2.3.3}
+\contentsline {subsubsection}{\numberline {2.3.3.1}Normalisation}{16}{subsubsection.2.3.3.1}
+\contentsline {subsubsection}{\numberline {2.3.3.2}Discrete Data}{16}{subsubsection.2.3.3.2}
+\contentsline {subsection}{\numberline {2.3.4}Online vs Offline learning}{16}{subsection.2.3.4}
+\contentsline {subsection}{\numberline {2.3.5}Test and Validation dataset}{17}{subsection.2.3.5}
+\contentsline {subsection}{\numberline {2.3.6}Data quality}{18}{subsection.2.3.6}
+\contentsline {chapter}{\numberline {3}Active Sample Selection}{19}{chapter.3}
+\contentsline {section}{\numberline {3.1}Background}{19}{section.3.1}
+\contentsline {section}{\numberline {3.2}Measuring Effectiveness}{21}{section.3.2}
+\contentsline {subsection}{\numberline {3.2.1}Discrete vs Continuous Data}{22}{subsection.3.2.1}
+\contentsline {section}{\numberline {3.3}Formal Definition}{22}{section.3.3}
+\contentsline {section}{\numberline {3.4}Goals of Active Sampling}{22}{section.3.4}
+\contentsline {section}{\numberline {3.5}Minimum Knowledge Search}{23}{section.3.5}
+\contentsline {subsection}{\numberline {3.5.1}Algorithm}{23}{subsection.3.5.1}
+\contentsline {subsection}{\numberline {3.5.2}Notes on performance}{24}{subsection.3.5.2}
+\contentsline {subsection}{\numberline {3.5.3}Comments}{25}{subsection.3.5.3}
+\contentsline {chapter}{\numberline {4}Advanced Sample Selection}{27}{chapter.4}
+\contentsline {section}{\numberline {4.1}Clustered Knowledge Sampling}{27}{section.4.1}
+\contentsline {subsection}{\numberline {4.1.1}Outline}{27}{subsection.4.1.1}
+\contentsline {subsection}{\numberline {4.1.2}Algorithm}{28}{subsection.4.1.2}
+\contentsline {subsection}{\numberline {4.1.3}Performance}{30}{subsection.4.1.3}
+\contentsline {subsection}{\numberline {4.1.4}Improvements and Limitations}{32}{subsection.4.1.4}
+\contentsline {section}{\numberline {4.2}Cell Specific Search Methods}{32}{section.4.2}
+\contentsline {section}{\numberline {4.3}Matrix-Normal Variance Search}{32}{section.4.3}
+\contentsline {subsection}{\numberline {4.3.1}Derivation}{34}{subsection.4.3.1}
+\contentsline {subsection}{\numberline {4.3.2}Performance}{35}{subsection.4.3.2}
+\contentsline {subsubsection}{\numberline {4.3.2.1}Improving Performance}{36}{subsubsection.4.3.2.1}
+\contentsline {section}{\numberline {4.4}MCMC Variance Search}{37}{section.4.4}
+\contentsline {subsection}{\numberline {4.4.1}Derivation}{37}{subsection.4.4.1}
+\contentsline {subsection}{\numberline {4.4.2}Performance}{38}{subsection.4.4.2}
+\contentsline {section}{\numberline {4.5}Lookahead Search}{40}{section.4.5}
+\contentsline {subsection}{\numberline {4.5.1}Algorithm}{40}{subsection.4.5.1}
+\contentsline {subsection}{\numberline {4.5.2}Performance}{41}{subsection.4.5.2}
+\contentsline {section}{\numberline {4.6}Combining CKS with MCMC Variance}{42}{section.4.6}
+\contentsline {subsection}{\numberline {4.6.1}Algorithm}{42}{subsection.4.6.1}
+\contentsline {subsection}{\numberline {4.6.2}Improvements}{42}{subsection.4.6.2}
+\contentsline {section}{\numberline {4.7}Comparing Algorithms}{43}{section.4.7}
+\contentsline {chapter}{\numberline {5}Evaluation and Observations}{45}{chapter.5}
+\contentsline {section}{\numberline {5.1}Test on Larger Datasets}{45}{section.5.1}
+\contentsline {subsection}{\numberline {5.1.1}Pre-Processing}{45}{subsection.5.1.1}
+\contentsline {subsection}{\numberline {5.1.2}Dealing with large sizes}{45}{subsection.5.1.2}
+\contentsline {subsection}{\numberline {5.1.3}Results}{46}{subsection.5.1.3}
+\contentsline {subsection}{\numberline {5.1.4}General Observations}{49}{subsection.5.1.4}
+\contentsline {section}{\numberline {5.2}Notes on General Active Sampling Performance}{50}{section.5.2}
+\contentsline {subsection}{\numberline {5.2.1}Future Work and Improvements}{50}{subsection.5.2.1}
+\contentsline {subsection}{\numberline {5.2.2}Real-World Application Consideration}{50}{subsection.5.2.2}
+\contentsline {section}{\numberline {5.3}Observations on RMSE}{51}{section.5.3}
+\contentsline {chapter}{\numberline {6}Conclusion}{52}{chapter.6}
+\contentsline {chapter}{References}{53}{chapter*.31}
+\contentsline {chapter}{Appendix A}{56}{appendix*.32}
+\contentsline {section}{\numberline {A.1}Probabilistic Matrix Factorization}{56}{section..1}
+\contentsline {subsection}{\numberline {A.1.1}Details of derivation}{56}{subsection..1.1}
+\contentsline {subsection}{\numberline {A.1.2}$\lambda $ as a Lagrange multiplier}{56}{subsection..1.2}
+\contentsline {section}{\numberline {A.2}Bayesian Probabilistic Matrix Factorization}{57}{section..2}
+\contentsline {section}{\numberline {A.3}Synthetic Data Generation}{57}{section..3}
+\contentsline {section}{\numberline {A.4}Clustering}{58}{section..4}
+\contentsline {subsection}{\numberline {A.4.1}K-Means}{58}{subsection..4.1}
+\contentsline {chapter}{Appendix B}{60}{appendix*.33}
+\contentsline {section}{\numberline {B.1}Test Data and Figures}{60}{section..1}
+\contentsline {section}{\numberline {B.2}Code}{63}{section..2}
+\contentsline {subsection}{\numberline {B.2.1}PMF}{63}{subsection..2.1}
+\contentsline {subsection}{\numberline {B.2.2}CKS}{64}{subsection..2.2}
+\contentsline {subsection}{\numberline {B.2.3}Matrix-Normal Variance calculation}{65}{subsection..2.3}
+\contentsline {subsection}{\numberline {B.2.4}Main Runtime Code for active sampling simulation}{67}{subsection..2.4}

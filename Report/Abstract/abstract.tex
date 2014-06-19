@@ -1,0 +1,22 @@
+
+% Thesis Abstract -----------------------------------------------------
+
+
+\begin{abstractslong}    %uncommenting this line, gives a different abstract heading
+%\begin{abstracts}        %this creates the heading for the abstract page
+
+The aim of this project is to investigate and propose active sampling methods. These are useful in the context of matrix completion where an incomplete dataset, such as user-movie ratings or drug-target interactions, are completed by predicting what the empty entries could be. Active sample selection deals with the issue of which new entries are best to request. For example if we know that people liking the film \textit{Alien} also like \textit{Aliens}, then asking a new user if he likes \textit{Aliens} given that he has told us he likes  \textit{Alien} is less informative than asking him if he likes \textit{The Good, the Bad and the Ugly} or another unrelated film. 
+Existing active sampling techniques currently differ in their accuracy and performance. A technique is usually considered to perform well when giving it extra samples leads to a better RMSE on a test set than when the same number of entries are randomly sampled. Active sampling techniques such as requesting the row and column combination which we know the least about are tried. More advanced techniques such as estimating the variance of each predicted sample or look-ahead methods are also investigated. An algorithm of good performance and complexity is also proposed. When dealing with  datasets containing millions of data-points or more, active sampling can be very useful as less samples need to be requested for sizeable prediction improvements - this is especially practical when sampling a new datapoint costs a lot effort-wise or financially, such as carrying out a new scientific experiment.
+ 
+
+
+%\end{abstracts}
+\end{abstractslong}
+
+% ----------------------------------------------------------------------
+
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "../thesis"
+%%% End: 
