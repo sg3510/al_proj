@@ -104,7 +104,7 @@ for req = 1:samples
             R_pred_rand = U_rand*V_rand' + mv_rand;
         case 3 % KPMF
             [U_rand,V_rand,~] = kpmf_func(R_train_rand,z_train_rand,iter_kmpf,num_feat,epsilon_kpmf,diffu_kmpf);
-            _pred_rand = U_rand*V_rand';
+            R_pred_rand = U_rand*V_rand';
         case 4 % PPMF
             [ U_rand,V_rand,mv_rand ] = run_ppmf(R_train_rand, z_train_rand,num_feat, R_val,z_val);
             R_pred_rand = U_rand*V_rand' + mv_rand;
