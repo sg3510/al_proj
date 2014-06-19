@@ -152,13 +152,14 @@
 
 %\setlength{\evensidemargin}{0.96cm} %\setlength{\evensidemargin}{1.96cm}
 \setlength{\oddsidemargin}{0cm}
+\setlength{\evensidemargin}{0cm}
 \setlength{\topmargin}{1mm}
 %\setlength{\headheight}{1.36cm}
 %\setlength{\headsep}{1.00cm}
 %\setlength{\textheight}{20.84cm}
 \setlength{\textwidth}{16cm} %\setlength{\textwidth}{14.5cm}
 %\setlength{\marginparsep}{1mm}
-\setlength{\marginparwidth}{1.75cm}
+%\setlength{\marginparwidth}{1.75cm}
 \setlength{\footskip}{2.36cm}
 
 \pagestyle{fancy}
