@@ -92,6 +92,7 @@
 \onehalfspacing
 
 \begin{document}
+\pagenumbering{roman}
 \begin{titlepage}
 % \newgeometry{top=25mm,bottom=25mm,left=38mm,right=32mm}
 \setlength{\parindent}{0pt}
@@ -151,14 +152,16 @@ Second Marker: & \textbf{Dr Cong Ling} \\
 \setcounter{tocdepth}{3}
 
 \frontmatter % book mode only
-\pagenumbering{roman}
+
 %\include{Dedication/dedication}
 \include{Acknowledgement/acknowledgement}
+\cleardoublepage
 \include{Abstract/abstract}
 
 \tableofcontents
 \listoffigures
 %\printglossaries
+\markright{List of Abbreviations}
 \renewcommand{\nomname}{List of Abbreviations}
 \printnomenclature[2cm]  %% Print the nomenclature
 %\printglossary
