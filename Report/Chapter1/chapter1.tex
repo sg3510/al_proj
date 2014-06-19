@@ -272,6 +272,8 @@ To understand what may be best to use, we test each type of algorithm on a datas
   \begin{center}
     \resizebox{\textwidth}{!}{\input{Chapter1/Chapter1Figs/5pcmatrix.tikz}}
     Each colour is made to represent a rating out of 5. Dark blue represents a 1 and red a rating of 5. The mean is represented in green.
+
+    A white cell represents an unknown sample.
     
     A row could be used to represent a user and a column a movie.
     \caption{Rating Predictions on synthetic data 5\% complete}
@@ -282,6 +284,8 @@ To understand what may be best to use, we test each type of algorithm on a datas
   \begin{center} 
     \resizebox{\textwidth}{!}{\input{Chapter1/Chapter1Figs/15pcmatrix.tikz}}
     For KPMF: RMSE=1.1867 for $\sigma=10$
+    
+    
     \caption{Rating Predictions on synthetic data 15\% complete}
     \label{fig:15pcmat}
   \end{center}
@@ -307,7 +311,7 @@ For the purpose of this project mainly PMF and BPMF will be used as they showed 
 Note that the used datasets, synthetic and movielens, have their values ranging from 1 to 5. Thus a RMSE of 2 would mean that predictions are off by 2 stars on average. A good RMSE would thus be under 1, meaning movie predictions are only off by 1 star or less. When possible, other datasets used will be normalised between 1 and 5 to have the RMSE somewhat comparable.
 
 \subsection{Choosing parameters}
-All the above PMF variants all relied on one or many parameters. For example PMF uses\footnote{This is actually a combination of $\lambda_U$ and $\lambda_V$ from equation \ref{eq:pmf_err_func}} $\lambda$. These parameters nearly always affect the system performance and choosing them correctly is essential. While it is possible optimise them as such:
+All the above PMF variants relied on one or many parameters. For example PMF uses\footnote{This is actually a combination of $\lambda_U$ and $\lambda_V$ from equation \ref{eq:pmf_err_func}} $\lambda$. These parameters nearly always affect the system performance and choosing them correctly is essential. While it is possible optimise them as such:
 \begin{align*}
 \underset{U,V,\lambda}{\argmin}\, E(U,V,\lambda)
 \end{align*}
@@ -316,7 +320,7 @@ This is not a good idea. Indeed $\lambda$ is a regularisation parameter needed t
 Other parameters, such as D (the number of features), could be optimised in a similar way but this increases complexity necessarily. Instead these parameters are usually tweaked by hand and this is what has been done here as this is not the main focus of research.
 \subsubsection{Learning rate $\mu$}
 
-$\mu$ is an essential parameter to most iterative learning algorithms. It is appropriately called the learning rate as it defines the rate at which parameters are learnt. If we imagine a convex curve and we are located at a random location on it $\mu$ essentially defines how far we can go on each iteration to get closer to the minimum. Should it be too small a very high number of iterations will be needed to reach satisfactory performance. A too large learning rate may fail to converge due to the steps "jumping around" a minimum but never reaching it - alternatively it could simply overflow with the error increasing at each iteration.
+$\mu$ is an essential parameter to most iterative learning algorithms. It is appropriately called the learning rate as it defines the rate at which parameters are learnt. If we imagine a convex curve and we are located at a random location on it, $\mu$ essentially defines how far we can go on each iteration to get closer to the minimum. Should it be too small a very high number of iterations will be needed to reach satisfactory performance. A too large learning rate may fail to converge due to the steps "jumping around" a minimum but never reaching it - alternatively it could simply overflow with the error increasing at each iteration.
 
 \subsection{Pre-Processing datasets}
 Before processing data, it is often advisable to pre-process it. This means cleaning up the data in ways that ensure good performance.
