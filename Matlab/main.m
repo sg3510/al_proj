@@ -91,7 +91,7 @@ for req = 1:samples
         sample_rand(a,b) = req;
     end
     
-    fprintf('Trainging with Random Sample(s)\n');
+    fprintf('Training with Random Sample(s)\n');
     % Train
     switch mf_type
         case 1 % PMF
