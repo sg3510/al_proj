@@ -185,7 +185,7 @@ As can be seen, not all proposed methods performed well and even underperformed 
 
 \section{Matrix-Normal Variance Search}
 \label{sec:mnvar}
-Here the idea is to infer the variance of unknown samples to be able to choose on to target. The variance is used as a proxy for uncertainty, where samples with a high variance are assumed to be the most "uncertain", due to being able to vary more.
+Here the idea is to infer the variance of unknown samples to be able to choose a target. The variance is used as a proxy for uncertainty, where samples with a high variance are assumed to be the most "uncertain", due to being able to vary more.
 \subsection{Derivation}
 The value we seek for each sample is the variance of each individual sample given the observed set, that is $\mathrm{Var}[R_{ij} \mid R_\mathcal{O}]$. We derive it as such:
 \begin{align*}
