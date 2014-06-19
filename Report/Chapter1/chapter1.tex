@@ -21,7 +21,7 @@
 \fi
 \markright{\thechapter. Recommender System Basics}
 \section{Basics}
-For any decent test of active sample selection a matrix completion algorithm must be used. The basic idea such a system is graphically described in figure \ref{MatrixComp}. We have an incomplete matrix that tells us a certain amount of data about what movies each user likes or dislikes. From this we use a matrix completion algorithm to infer what the empty entries are. This thus allows a system to recommend potential movies a user may like or useful drug-target interactions that have not been tested out.
+To build an active sample selection algorithm, first a matrix completion one must be used. The basic idea such a system is graphically described in figure \ref{MatrixComp}. We have an incomplete matrix that tells us a certain amount of data about what movies each user likes or dislikes. From this we use a matrix completion algorithm to infer what the empty entries are. This thus allows a system to recommend potential movies a user may like or useful drug-target interactions that have not been tested out.
 \begin{figure}[!htbp]
   \begin{center}
 \begin{tikzpicture}[scale=.6]
@@ -105,7 +105,7 @@ Completed entries have their number represented in blue. Each movie is rated out
   
 \end{figure}
 
-Many commercial systems for recommender systems currently exist. For example Amazon, YouTube, Google, Netflix, IMDb and Last.fm are but a small sample of websites using recommender systems to suggest films, ads, music or products to users. In fact Netflix is known for the "Netflix Prize", an open competition that awarded \$1 million to a group of researchers that could create a recommender system achieving a 10\% or more improvement on their previous one.
+Many commercial systems implementations of recommender systems currently exist. For example Amazon, YouTube, Google, Netflix, IMDb and Last.fm are but a small sample of websites using recommender systems to suggest films, ads, music or products to users. In fact Netflix is known for the "Netflix Prize", an open competition that awarded \$1 million to a group of researchers that could create a recommender system achieving a 10\% or more improvement on Netflix's own one.
 
 More formally, a recommender system database comes in matrix form, $R \in \mathbb{R}^{M \times N}$ with each entry containing a numerical quantifier of the relationship between the row item and column item. As not every entry is complete we can associate this to a mask matrix $Z \in \mathbb{R}^{M \times N}$, where $Z_{ij} \in \{0,1\} \forall i,j$. $0$ represents an unknown entry and $1$ a currently known entry.
 
@@ -121,7 +121,7 @@ More formally, a recommender system database comes in matrix form, $R \in \mathb
 
 
 \subsection{Overview}
-Recommender systems typically work by having a pre-processing and analysis/matching stage with Figure \ref*{fig:RecSysDiagram} showing the various stages. Pre-processing will typically be clustering the data into groups, reducing the dimensionality (for example by a process similar to SVD) or creating a subset of data that is more manageable. Active sample selection fits in here. Then the actual processing stage is where the empty samples are filled in. There can also be a post-processing stage where certain generated samples are selected either due to their usefulness or high score (i.e. a high predicted product score may be selected as part of a monetisation strategy). 
+Recommender systems typically work by having a pre-processing and analysis/matching stage with Figure \ref{fig:RecSysDiagram} showing the various stages. Pre-processing will typically be clustering the data into groups, reducing the dimensionality (for example by a process similar to SVD) or creating a subset of data that is more manageable. Active sample selection fits in here. Then the actual processing stage is where the empty samples are filled in. There can also be a post-processing stage where certain generated samples are selected either due to their usefulness or high score (i.e. a high predicted product score may be selected as part of a monetisation strategy). 
 
 \nomenclature{SVD}{Singular Value Decomposition - A method to decompose a matrix into smaller dimension matrices}
 
@@ -198,7 +198,7 @@ From $e_{ij}^2$ we can find $U$ $V$ satisfying $\underset{U,V}{\argmin} \, E$ th
 U_{ik}^{t+1} &= U_{ik}^{t} - \mu \frac{\partial}{\partial U_{ik}}(e_{ij}^2) \\
 &= U_{ik}^{t} + \mu (2 e_{ij}V_{jk} - \lambda_U  U_{ik}^{t})\\
 V_{jk}^{t+1} &= V_{jk}^{t} - \mu \frac{\partial}{\partial V_{jk}}(e_{ij}^2) \\
-&= V_{jk}^{t} + \mu (2 e_{ij}U_{ik} - \lambda_V  V_{jk}^{t})\\
+&= V_{jk}^{t} + \mu (2 e_{ij}U_{ik} - \lambda_V  V_{jk}^{t})
 \end{align*}
 $k$ is the feature index, as defined by $D$, $\mu$ i{\tiny }s the learning rate and $t$ is the iteration index. The steps above are repeated until convergence (as defined by a custom criteria) or a fixed number of iterations. This allows us to learn the features of each column and row. Once $U$ and $V$ are learned we can estimate the full matrix by:
 \begin{align}
