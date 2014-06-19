@@ -1,2 +1,7 @@
 *.tar.gz
 *.asv
+.gz
+.log
+.aux
+.auxlock
+.out
