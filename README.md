@@ -7,7 +7,7 @@ This contains the code used to simulate active sample selection on various datas
 Report
 --------
 
-The full report can be found in the Report directory under [thesis.pdf](http://sg3510.github.io/al_proj/Report/thesis.pdf "Project Final Report")
+The full report can be found in the Report directory under [thesis.pdf](http://sg3510.github.io/al_proj/Report/thesis.pdf "Project Final Report") or [here](https://www.academia.edu/10376996/Active_Sample_Selection_for_Matrix_Completion).
 
 Aim of Project
 --------
